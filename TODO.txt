@@ -1,0 +1,26 @@
+TODO:
+    class character (with few instances of protagonist and antagonist)
+        hp
+        sanity
+        inventory
+        backpack
+    class inventory
+        main hand
+        sec hand
+        armor
+
+    class item
+        is usable
+        is wearable
+        is destructable
+    sub item usable:
+        what happens after use:
+            stat impact
+            any special
+        wearable:
+            which slot, etc
+            
+    class fight
+        two teams
+        special things idk random shit happens
+
