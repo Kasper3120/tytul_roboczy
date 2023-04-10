@@ -4,7 +4,7 @@ from character import Character
 from weapon import Weapon
 
 from random import randrange
-# import sys
+import pickle
 
 
 def roll(times):
@@ -33,21 +33,18 @@ def parseInt():
             print("Pass a number")
 
 
-def chooseCharacter(team):
-    names = []
-    for member in team:
-        names.append(member.getName())
-        print("Choose character:")
-        for i, name in enumerate(names):
-            print(f"{i}. {name}")
-        while True:
-            try:
-                return team[parseInt()]
-            except IndexError:
-                print("No character assigned to that number")
+def chooseCharacter(team): # TODO: add better display (Hp: num)
+    print("Choose character:")
+    for i, member in enumerate(team):
+        print(f"{i}. {member.getName()} ({member.getHp()})")
+    while True:
+        try:
+            return team[parseInt()]
+        except IndexError:
+            print("No character assigned to that number")
 
 
-def chooseAction(character, team, oponent_team):
+def chooseAction(character, team, enemy_team):
     print("Choose action:")
     print("1. Change character.")
     print("2. Attack.")
@@ -57,69 +54,82 @@ def chooseAction(character, team, oponent_team):
         choice = parseInt()
         if choice == 1:
             return True
-        elif choice == 2:
+        elif choice == 2: # TODO: choose char opt & add func interfaceAttack
             print("Choose an enemy to attack:")
-            for i, op in enumerate(oponent_team):
-                print(f"{i}. {op}")
-                # TODO finish that
-            return False
+            while True:
+                for i, enemy in enumerate(enemy_team):
+                    print(f"{i}. {enemy.getName()} ({enemy.getHp()})")
+                try:
+                    chosen_enemy = enemy_team[parseInt()]
+                    character.attack(character.inventory["weapon"], chosen_enemy, roll(2), roll(2))
+                    return False
+                except IndexError:
+                    print("Wrong input") # TODO: input to tab parser
+                # TODO: Add interactive rolling (or not?)
         elif choice == 3:
             # special
             print("Special attack not configured")
         print("Wrong number")
 
 
-def clearField(team, oponent_team):
+def clearField(team, enemy_team):
     for i, member in enumerate(team):
         if member.isDead():
             team.pop(i)
-    for i, member in enumerate(oponent_team):
+    for i, member in enumerate(enemy_team):
         if member.isDead():
-            oponent_team.pop(i)
+            enemy_team.pop(i)
 
 
-def oponentsAction(oponent_team):
-    pass
+def enemysAction(team, enemy_team): # TODO: upgrade
+    enemy = enemy_team[randrange(0, len(enemy_team))]
+    chosen_target = team[randrange(0, len(team))]
+    enemy.attack(enemy.inventory["weapon"], chosen_target, roll(2), roll(2))
 
 
-def fightControlable(team, oponent_team):
+def fightControlable(team, enemy_team):
     while True:
         players_turn = True
         while players_turn:
             character = chooseCharacter(team)
-            players_turn = chooseAction(character)
-        clearField(team, oponent_team)
-        if oponent_team.size() == 0 or team.size() == 0:
+            players_turn = chooseAction(character, team, enemy_team)
+        clearField(team, enemy_team)
+        if not enemy_team or not team:
             break
-        oponentsAction(oponent_team)
-        clearField(team, oponent_team)
-        if oponent_team.size() == 0 or team.size() == 0:
+        enemysAction(team, enemy_team)
+        clearField(team, enemy_team)
+        if not enemy_team or not team:
             break
+
+def saveCharacter(character):
+    with open(f'./bin/characters/{character.getName()}.dat', 'wb') as f:
+        pickle.dump(character, f)
+
+def loadCharacter(name):
+    with open(f'./bin/characters/{name}.dat', 'rb') as f:
+        return pickle.load(f)
 
 
 def main():
-    weapons = [Weapon("knife", 4, [8, 8], 9), Weapon("mace", 3, [10, 8], 10)]
-    invKnife = {}
-    invKnife["armor"] = 1
-    knife = {}
-    knife["attack"] = 4
-    invKnife["weapon"] = weapons[0]
 
-    shiv = Character("shiv", 7, invKnife)
-
-    invMace = {}
-    invMace["armor"] = 2
-    mace = {}
-    mace["attack"] = 3
-    invMace["weapon"] = weapons[1]
-
-    muck = Character("muck", 9, invMace)
-
-    dummy = Character("dummy", 5, inventory={})
+    shiv = loadCharacter("Shiv")
+    muck = loadCharacter("Muck")
 
     team = [muck, shiv]
-    op_team = [dummy, dummy]
-    fightControlable[team, op_team]
+
+    dummy1 = loadCharacter("Dummy")
+    dummy1.setName("Dummy 1")
+
+    dummy2 = loadCharacter("Dummy")
+    dummy2.setName("Dummy 2")
+
+    rat = loadCharacter("Rat")
+
+    op_team = [dummy1, dummy2, rat]
+
+    #fight
+    # fightControlable(team, op_team)
+    print("You won")
 
 
 if __name__ == '__main__':

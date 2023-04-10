@@ -5,7 +5,7 @@ from weapon import Weapon
 
 class Character:
     def __init__(self, name, hp,
-                 inventory={"weapon": Weapon("hands", 2, [6, 1], 8)},
+                 inventory={"weapon": Weapon("hands", 2, [6, 1], 8), "armor": 0},
                  backpack={}, strength=0, agility=0, status=[]):
         self.name = name
         self.hp = hp
@@ -16,7 +16,7 @@ class Character:
         self.backpack = backpack
 
     def attack(self, weapon, who, attack_dice, crit_dice):
-        attack = self.inventory["weapon"].getAttack(attack_dice) - who.inventory["armor"]
+        attack = self.inventory["weapon"].getAttack(attack_dice) - who.inventory["armor"] # TODO: bug - if no armor function throws an exception
         crit_attack = self.inventory["weapon"].getCrit(crit_dice) - who.inventory["armor"]
 
         if crit_attack > 0:
@@ -33,6 +33,10 @@ class Character:
     def isDead(self): return self.hp <= 0
 
     def getName(self): return self.name
+    
+    def setName(self, name): self.name = name
+
+    def getHp(self): return self.hp
 
     def __str__(self):
         return f"name:{self.name};hp:{self.hp};inv:{self.inventory}"
