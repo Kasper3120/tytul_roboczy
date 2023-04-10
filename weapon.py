@@ -22,3 +22,5 @@ class Weapon:
 
     def __str__(self):
         return f"{self.name}:{self.attack}:{self.special}:{self.crit}"
+
+    def getName(self): return self.name

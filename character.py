@@ -1,23 +1,24 @@
 #!/bin/python3
 
 from weapon import Weapon
+from inventory import Inventory
 
 
 class Character:
     def __init__(self, name, hp,
-                 inventory={"weapon": Weapon("hands", 2, [6, 1], 8), "armor": 0},
-                 backpack={}, strength=0, agility=0, status=[]):
+                 inventory=Inventory(Weapon("hands", 2, [6, 1], 8), 0, {}),
+                 strength=0, agility=0, status=[]):
         self.name = name
         self.hp = hp
         self.inventory = inventory
         self.strength = strength
         self.agility = agility
         self.status = status
-        self.backpack = backpack
 
-    def attack(self, weapon, who, attack_dice, crit_dice):
-        attack = self.inventory["weapon"].getAttack(attack_dice) - who.inventory["armor"] # TODO: bug - if no armor function throws an exception
-        crit_attack = self.inventory["weapon"].getCrit(crit_dice) - who.inventory["armor"]
+    def attack(self, who, attack_dice, crit_dice):
+        # TODO: bug - if no armor function throws an exception
+        attack = self.inventory.weapon.getAttack(attack_dice) - who.inventory.getArmor()
+        crit_attack = self.inventory.weapon.getCrit(crit_dice) - who.inventory.getArmor()
 
         if crit_attack > 0:
             who.hp -= crit_attack
@@ -33,7 +34,7 @@ class Character:
     def isDead(self): return self.hp <= 0
 
     def getName(self): return self.name
-    
+
     def setName(self, name): self.name = name
 
     def getHp(self): return self.hp
