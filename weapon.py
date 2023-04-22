@@ -1,4 +1,5 @@
 #!/bin/python3
+from util import Util
 
 class Weapon:
     """
@@ -24,3 +25,32 @@ class Weapon:
         return f"{self.name}:{self.attack}:{self.special}:{self.crit}"
 
     def getName(self): return self.name
+
+    def weaponCreator():
+        while True:
+            name = input("Set name")
+            print("Set attack")
+            attack = Util.parseInt()
+            print("Set crit chance")
+            crit_chance = Util.parseInt()
+            print("Set special chance")
+            spec_chance = Util.parseInt()
+            print("Set special damage")
+            special_dmg = Util.parseInt()
+            weapon = Weapon(
+                    name,
+                    attack,
+                    [spec_chance, special_dmg],
+                    crit_chance
+                    )
+            print(weapon)
+            while True:
+                print("Save weapon? (y/n-try again/0-exit)")
+                choice = input()
+                if choice == 'y':
+                    Util.saveWeapon(weapon)
+                    return
+                elif choice == 'n':
+                    break
+                elif choice == "0":
+                    return

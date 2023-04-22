@@ -2,6 +2,7 @@
 
 from weapon import Weapon
 from inventory import Inventory
+from util import Util
 
 
 class Character:
@@ -41,3 +42,40 @@ class Character:
 
     def __str__(self):
         return f"name:{self.name};hp:{self.hp};inv:{self.inventory}"
+
+
+def characterCreator():
+    while True:
+        name = input("Set name")
+        print("Set hp")
+        hp = Util.parseInt()
+        print("Set strength")
+        strength = Util.parseInt()
+        print("Set agility")
+        agility = Util.parseInt()
+        # TODO: status
+        print("Set Armor")
+        armor = Util.parseInt()
+        print("Set Weapon")
+        while True:
+            if not Util.weaponSearch():
+                break
+    # TODO: finish creator
+
+
+def main():
+    print("Welcome to character creator!")
+    while True:
+        print("Do you want to create new character (y/n)")
+        choice = input()
+        if choice == 'y':
+            characterCreator()
+            return
+        elif choice == 'n':
+            return
+        else:
+            print("Wrong input")
+
+
+if __name__ == "__main__":
+    main()

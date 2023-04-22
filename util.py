@@ -2,6 +2,7 @@
 # from character import Character
 
 from random import randrange
+from os import listdir
 import pickle
 
 
@@ -46,3 +47,40 @@ class Util:
     def loadWeapon(name):
         with open(f'./bin/weapons/{name}.dat', 'rb') as f:
             return pickle.load(f)
+
+    def weaponSearch():
+        list = listdir("./bin/weapons/")
+        while True:
+            weapon = input()
+            if weapon == "0":
+                return
+            if weapon+".dat" in list:
+                return Util.loadWeapon(weapon)
+            else:
+                print("No such weapon in database, try another name; type 0 to exit")
+
+    def updateCharacter(name, what, to):
+        character = Util.loadCharacter(name)
+        if what == "name":
+            character.name = to
+        if what == "hp":
+            character.hp = to
+        if what == "strength":
+            character.strength = to
+        if what == "agility":
+            character.agility = to
+        if what == "status":
+            character.status = to
+        if what == "inventory":
+            character.inventory = to
+
+    def updateWeapon(name, what, to):
+        weapon = Util.loadWeapon(name)
+        if what == "name":
+            weapon.name = to
+        if what == "attack":
+            weapon.attack = to
+        if what == "special":
+            weapon.special = to
+        if what == "crit":
+            weapon.crit = to

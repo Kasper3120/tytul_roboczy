@@ -1,7 +1,7 @@
 #!/bin/python3
 
 class Inventory:
-    def __init__(self, weapon, armor=0, backpack={}):
+    def __init__(self, weapon, armor=0, backpack=[]):
         self.weapon = weapon
         self.armor = armor
         self.backpack = backpack
