@@ -1,8 +1,8 @@
 TODO:
-    class character (with few instances of protagonist and antagonist)
-        hp
+    class character (with few instances of characters and enemys)
+        hp done!
         sanity
-        inventory
+        inventory done!
         backpack
     class inventory
         main hand
@@ -21,6 +21,6 @@ TODO:
             which slot, etc
             
     class fight
-        two teams
-        special things idk random shit happens
+        two teams done!
+        special events
 
