@@ -7,7 +7,9 @@ from util import Util
 
 from random import randrange
 
+
 class Fight:
+
     def __init__(self, team, enemy_team):
         self.team = team
         self.enemy_team = enemy_team
@@ -23,7 +25,6 @@ class Fight:
             except IndexError:
                 print("No character assigned to that number")
 
-
     def attackInterface(self, character):
         print("Choose an enemy to attack:")
         while True:
@@ -36,7 +37,6 @@ class Fight:
             except IndexError:
                 print("Wrong input")  # TODO: input to tab parser
             # TODO: Add interactive rolling (or not?)
-
 
     def inspectTarget(target):
         print(target)
@@ -59,7 +59,6 @@ class Fight:
                 print("Special attack not configured")
             print("Wrong number")
 
-
     def clearField(self):
         for i, member in enumerate(self.team):
             if member.isDead():
@@ -67,7 +66,6 @@ class Fight:
         for i, member in enumerate(self.enemy_team):
             if member.isDead():
                 self.enemy_team.pop(i)
-
 
     def enemysAction(self):  # TODO: upgrade
         enemy = self.enemy_team[randrange(0, len(self.enemy_team))]
@@ -87,7 +85,6 @@ class Fight:
             self.clearField()
             if not self.enemy_team or not self.team:
                 break
-
 
 
 def main():
