@@ -1,9 +1,9 @@
 TODO:
     class character (with few instances of characters and enemys)
-        hp done!
         sanity
-        inventory done!
-        backpack
+        backpack and items
+        new characters
+        statuses
     class inventory
         main hand
         sec hand
@@ -21,6 +21,10 @@ TODO:
             which slot, etc
             
     class fight
-        two teams done!
         special events
+        special attacks
 
+    known bugs:
+        solved! fights dont dissappear from place
+        solved! if enemy team empty fight is unexitable
+        solved! if team dies player continues exploring

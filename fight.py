@@ -13,7 +13,8 @@ class Fight:
     def __init__(self, team, enemy_team):
         self.team = team
         self.enemy_team = enemy_team
-        self.fightControlable()
+        if enemy_team and team:
+            self.fightControlable()
 
     def chooseCharacter(self):
         print("Choose a character:")
@@ -89,28 +90,30 @@ class Fight:
 
 def main():
 
-    shiv = Util.loadCharacter("Shiv")
-    muck = Util.loadCharacter("Muck")
+    # shiv = Util.loadCharacter("Shiv")
+    # muck = Util.loadCharacter("Muck")
 
-    team = [muck, shiv]
+    # team = [muck, shiv]
 
-    dummy1 = Util.loadCharacter("Dummy")
+    # dummy1 = Util.loadCharacter("Dummy")
     # dummy1.setName("Dummy 1")
 
-    dummy2 = Util.loadCharacter("Dummy")
-    dummy2.setName("Dummy 2")
+    # dummy2 = Util.loadCharacter("Dummy")
+    # dummy2.setName("Dummy 2")
 
-    rat = Util.loadCharacter("Rat")
+    # rat = Util.loadCharacter("Rat")
 
-    op_team = [dummy1, dummy2, rat]
+    # op_team = [dummy1, dummy2, rat]
 
-    Fight.inspectTarget(shiv)
-    Fight.inspectTarget(muck)
-    Fight.inspectTarget(dummy1)
-    Fight.inspectTarget(rat)
+    # Fight.inspectTarget(shiv)
+    # Fight.inspectTarget(muck)
+    # Fight.inspectTarget(dummy1)
+    # Fight.inspectTarget(rat)
 
     # fight
-    fight = Fight(team, op_team)
+    # fight = Fight(team, op_team)
+
+    
     print("You won")
 
 

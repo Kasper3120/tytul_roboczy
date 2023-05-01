@@ -2,6 +2,7 @@
 from util import Util
 
 class Weapon:
+
     """
     String name, Int attack, Int special[chance, dmg/string]
     int crit = crit chance
@@ -28,14 +29,14 @@ class Weapon:
 
     def weaponCreator():
         while True:
-            name = input("Set name")
-            print("Set attack")
+            name = input("Set name:\n")
+            print("Set attack:")
             attack = Util.parseInt()
-            print("Set crit chance")
+            print("Set crit chance:")
             crit_chance = Util.parseInt()
-            print("Set special chance")
+            print("Set special chance:")
             spec_chance = Util.parseInt()
-            print("Set special damage")
+            print("Set special damage:")
             special_dmg = Util.parseInt()
             weapon = Weapon(
                     name,
@@ -43,8 +44,8 @@ class Weapon:
                     [spec_chance, special_dmg],
                     crit_chance
                     )
-            print(weapon)
             while True:
+                print(weapon)
                 print("Save weapon? (y/n-try again/0-exit)")
                 choice = input()
                 if choice == 'y':
@@ -54,3 +55,11 @@ class Weapon:
                     break
                 elif choice == "0":
                     return
+
+
+def main():
+    Weapon.weaponCreator()
+
+
+if __name__ == '__main__':
+    main()

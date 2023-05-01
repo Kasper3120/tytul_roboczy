@@ -7,7 +7,7 @@ import pickle
 
 
 class Util:
-    def roll(times):
+    def roll(times=1):
         output = 0
         for i in range(0, times):
             output += randrange(1, 7)

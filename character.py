@@ -4,6 +4,8 @@ from weapon import Weapon
 from inventory import Inventory
 from util import Util
 
+import pdb
+
 
 class Character:
     def __init__(self, name, hp,
@@ -46,7 +48,7 @@ class Character:
 
 def characterCreator():
     while True:
-        name = input("Set name")
+        name = input("Set name\n")
         print("Set hp")
         hp = Util.parseInt()
         print("Set strength")
@@ -57,10 +59,20 @@ def characterCreator():
         print("Set Armor")
         armor = Util.parseInt()
         print("Set Weapon")
+        pdb.set_trace()
+        weapon = Util.weaponSearch()
+        character = Character(name, hp, Inventory(weapon, armor, {}), strength, agility)
         while True:
-            if not Util.weaponSearch():
+            print(character)
+            print("Save character? (y/n-try again/0-exit)")
+            choice = input()
+            if choice == 'y':
+                Util.saveCharacter(character)
+                return
+            elif choice == 'n':
                 break
-    # TODO: finish creator
+            elif choice == "0":
+                return
 
 
 def main():
