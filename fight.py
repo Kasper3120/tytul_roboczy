@@ -28,15 +28,15 @@ class Fight:
                 if status_numbers[0] == -1:
                     character.status.pop(status_name)
 
-    def chooseCharacter(self):
-        print("Choose a character:")
-        for i, member in enumerate(self.team):
-            print(f"{i}. {member.getName()} (Hp: {member.getHp()})")
-        while True:
-            try:
-                return self.team[Util.parseInt()]
-            except IndexError:
-                print("No character assigned to that number")
+    # def chooseCharacter(self):
+    #     print("Choose a character:")
+    #     for i, member in enumerate(self.team):
+    #         print(f"{i}. {member.getName()} (Hp: {member.getHp()})")
+    #     while True:
+    #         try:
+    #             return self.team[Util.parseInt()]
+    #         except IndexError:
+    #             print("No character assigned to that number")
 
     def attackInterface(self, character):
         print("Choose an enemy to attack:")
@@ -52,6 +52,20 @@ class Fight:
 
     def inspectTarget(target):
         print(target)
+
+    def chooseItem(self, character):
+        for i, item in enumerate(character.backpack):
+            print(f"{i}. {item.name}")
+        print(f"{len(character.backpack)}. Return to menu.")
+        chosen_item = Util.parseInt()
+        if chosen_item == len(character.backpack):
+            return False
+        else:
+            character.backpack[item].consume()
+            character.backpack.pop(item)
+            return False
+            # TODO: exclude not consumable
+            # TODO: uniq + count
 
     def chooseAction(self, character):
         print(f"{character.getName()}'s turn")
@@ -110,8 +124,16 @@ class Fight:
         while True:
             for character in all_chars:
                 if character in self.team:
+                    self.executeStatus(character)
+                    self.clearField()
+                    if not self.enemy_team or not self.team:
+                        return
                     self.chooseAction(character)
                 else:
+                    self.executeStatus(character)  # TODO: what if char dies due to status, try to DRY that
+                    self.clearField()
+                    if not self.enemy_team or not self.team:
+                        return
                     self.enemysAction(character)
                 self.clearField()
                 if not self.enemy_team or not self.team:
@@ -142,7 +164,6 @@ def main():
 
     # fight
     fight = Fight(team, op_team)
-
 
     print("You won")
 
