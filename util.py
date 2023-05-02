@@ -1,4 +1,5 @@
 #!/bin/python3
+
 # from character import Character
 
 from random import randrange
@@ -41,12 +42,16 @@ class Util:
             return pickle.load(f)
 
     def saveWeapon(weapon):
-        with open(f'./bin/weapons/{weapon.getName()}.dat', 'wb') as f:
+        with open(f'./bin/items/weapons/{weapon.getName()}.dat', 'wb') as f:
             pickle.dump(weapon, f)
 
-    def loadWeapon(name):
-        with open(f'./bin/weapons/{name}.dat', 'rb') as f:
+    def loadConsumable(name):
+        with open(f'./bin/items/consumable/{name}.dat', 'rb') as f:
             return pickle.load(f)
+
+    def saveConsumable(consumable):
+        with open(f'./bin/items/consumable/{consumable.getName()}.dat', 'wb') as f:
+            pickle.dump(consumable, f)
 
     def weaponSearch():
         list = listdir("./bin/weapons/")
@@ -59,28 +64,10 @@ class Util:
             else:
                 print("No such weapon in database, try another name; type 0 to exit")
 
-    def updateCharacter(name, what, to):
-        character = Util.loadCharacter(name)
-        if what == "name":
-            character.name = to
-        if what == "hp":
-            character.hp = to
-        if what == "strength":
-            character.strength = to
-        if what == "agility":
-            character.agility = to
-        if what == "status":
-            character.status = to
-        if what == "inventory":
-            character.inventory = to
 
-    def updateWeapon(name, what, to):
-        weapon = Util.loadWeapon(name)
-        if what == "name":
-            weapon.name = to
-        if what == "attack":
-            weapon.attack = to
-        if what == "special":
-            weapon.special = to
-        if what == "crit":
-            weapon.crit = to
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    main()

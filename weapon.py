@@ -1,20 +1,21 @@
 #!/bin/python3
 from util import Util
+from item import Item
 
-class Weapon:
 
+class Weapon(Item):
     """
     String name, Int attack, Int special[chance, dmg/string]
     int crit = crit chance
     """
-    def __init__(self, name, attack, special, crit):
-        self.name = name
+
+    def __init__(self, name="", description="", passive={}, attack=0, special=[0, 0], crit=0):
+        super().__init__(name, description, passive)
         self.attack = attack
         self.special = special
         self.crit = crit
 
-    def getAttack(self, dice):
-        return round(self.attack*(dice/12))
+    def getAttack(self, dice): return round(self.attack*(dice/12))
 
     def getSpecial(self, dice):
         return self.special[1] if dice > self.special[0] else 0
@@ -23,9 +24,7 @@ class Weapon:
         return round(self.attack*1.5) if dice > self.crit else 0
 
     def __str__(self):
-        return f"{self.name}:{self.attack}:{self.special}:{self.crit}"
-
-    def getName(self): return self.name
+        return f"{self.name}:{self.description}:{self.passive}:{self.attack}:{self.special}:{self.crit}"
 
     def weaponCreator():
         while True:

@@ -105,9 +105,8 @@ class Dungeon:
 
 
 def main():
-    # team = [Util.loadCharacter("Henry"), Util.loadCharacter("Muck")]
-    team = [Util.loadCharacter("Shiv")]
-    dung = Dungeon(team, 10)
+    team = [Util.loadCharacter("Henry"), Util.loadCharacter("Muck")]
+    dung = Dungeon(team, 7)
     dung.startDungeon()
 
 

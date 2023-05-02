@@ -13,6 +13,7 @@ class Character:
                  strength=0, agility=0, status=[]):
         self.name = name
         self.hp = hp
+        self.max_hp = hp
         self.inventory = inventory
         self.strength = strength
         self.agility = agility
@@ -59,7 +60,6 @@ def characterCreator():
         print("Set Armor")
         armor = Util.parseInt()
         print("Set Weapon")
-        pdb.set_trace()
         weapon = Util.weaponSearch()
         character = Character(name, hp, Inventory(weapon, armor, {}), strength, agility)
         while True:
