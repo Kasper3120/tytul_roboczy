@@ -28,16 +28,6 @@ class Fight:
                 if status_numbers[0] == -1:
                     character.status.pop(status_name)
 
-    # def chooseCharacter(self):
-    #     print("Choose a character:")
-    #     for i, member in enumerate(self.team):
-    #         print(f"{i}. {member.getName()} (Hp: {member.getHp()})")
-    #     while True:
-    #         try:
-    #             return self.team[Util.parseInt()]
-    #         except IndexError:
-    #             print("No character assigned to that number")
-
     def attackInterface(self, character):
         print("Choose an enemy to attack:")
         while True:
@@ -63,7 +53,7 @@ class Fight:
         else:
             character.backpack[item].consume()
             character.backpack.pop(item)
-            return False
+            return True
             # TODO: exclude not consumable
             # TODO: uniq + count
 
@@ -83,7 +73,8 @@ class Fight:
                 # TODO: special
                 print("Special attack not configured")
             elif choice == 3:
-                print("Items not configured")
+                if self.chooseItem(character):
+                    return
             print("Wrong input")
 
     def clearField(self):
