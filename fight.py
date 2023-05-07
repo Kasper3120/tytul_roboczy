@@ -17,7 +17,7 @@ class Fight:
         if enemy_team and team:
             self.fightControlable()
 
-    def executeStatus(character):
+    def executeStatus(self, character):
         for status_name, status_numbers in character.status:
             status_numbers[0] -= 1
             if status_name in ("heal", "bleeding", "poisoning", "hurt"):
@@ -68,7 +68,7 @@ class Fight:
             # TODO: uniq + count
 
     def chooseAction(self, character):
-        print(f"{character.getName()}'s turn")
+        print(f"{character.getName()}'s turn. Hp:{character.hp}")
         print("Choose action:")
         print("1. Attack.")
         print("2. Special attack.")

@@ -2,6 +2,7 @@
 
 from util import Util
 from weapon import Weapon
+from consumable import Consumable
 
 from os import listdir
 import pdb
@@ -65,7 +66,10 @@ class Update:
 
 
 def main():
-    Update.updateAllCharacters()
+    potion = Util.loadConsumable("health potion")
+    character = Util.loadCharacter("Muck")
+    character.inventory.backpack = [potion]
+    Util.saveCharacter(character)
 
 
 if __name__ == '__main__':
