@@ -6,6 +6,7 @@ from inventory import Inventory
 from util import Util
 
 from random import randrange
+import random
 # import pdb
 
 
@@ -23,10 +24,10 @@ class Fight:
             if status_name in ("heal", "bleeding", "poisoning", "hurt"):
                 character += status_numbers[1]
                 if status_numbers[0] == 0:
-                    character.status.pop(status_name)
+                    del character.status[status_name]
             if status_name in ("strength", "agility"):
                 if status_numbers[0] == -1:
-                    character.status.pop(status_name)
+                    del character.status[status_name]
 
     def attackInterface(self, character):
         print("Choose an enemy to attack:")
@@ -50,10 +51,15 @@ class Fight:
         chosen_item = Util.parseInt()
         if chosen_item == len(character.backpack):
             return False
+        elif chosen_item < 0 or chosen_item >= len(character.backpack):
+            print("Wrong item number")
         else:
-            character.backpack[item].consume()
-            character.backpack.pop(item)
-            return True
+            if not character.backpack[chosen_item].consume():
+                print("This item is not consumable")
+            else:
+                # character.backpack.pop(chosen_item)
+                del character.backpack[chosen_item]
+                return True
             # TODO: exclude not consumable
             # TODO: uniq + count
 
@@ -63,7 +69,6 @@ class Fight:
         print("1. Attack.")
         print("2. Special attack.")
         print("3. Choose item")
-        # idea for listing items - use for items and f""
         while True:
             choice = Util.parseInt()
             if choice == 1:
@@ -78,57 +83,31 @@ class Fight:
             print("Wrong input")
 
     def clearField(self):
-        for i, member in enumerate(self.team):
-            if member.isDead():
-                print(f"{member.getName()} dies")
-                self.team.pop(i)
-        for i, member in enumerate(self.enemy_team):
-            if member.isDead():
-                print(f"{member.getName()} dies")
-                self.enemy_team.pop(i)
+        self.team = [member for member in self.team if not member.isDead()]
+        self.enemy_team = [member for member in self.enemy_team if not member.isDead()]
 
-    def enemysAction(self, enemy):  # TODO: upgrade
-        chosen_target = self.team[randrange(0, len(self.team))]
+    def enemyAction(self, enemy):  # TODO: upgrade
+        # chosen_target = self.team[randrange(0, len(self.team))]
+        chosen_target = random.choice(self.team)
         enemy.attack(chosen_target, Util.roll(2), Util.roll(2))
 
-    def players_turn():
-        pass
-
-    # def fightControlable(self):
-    #     while True:
-    #         players_turn = True
-    #         while players_turn:
-    #             character = self.chooseCharacter()
-    #             players_turn = self.chooseAction(character)
-    #         self.clearField()
-    #         if not self.enemy_team or not self.team:
-    #             break
-    #         self.enemysAction()
-    #         self.clearField()
-    #         if not self.enemy_team or not self.team:
-    #             break
-
     def fightControlable(self):
-        # while True:
+        # future problem - when agility is changed it can change the order
         all_chars = self.team + self.enemy_team
         all_chars = sorted(all_chars, key=lambda k: k.agility, reverse=True)
-        while True:
+        while self.enemy_team and self.team:
             for character in all_chars:
                 if character in self.team:
                     self.executeStatus(character)
                     self.clearField()
-                    if not self.enemy_team or not self.team:
-                        return
-                    self.chooseAction(character)
+                    if not character.isDead():
+                        self.chooseAction(character)
                 else:
-                    self.executeStatus(character)  # TODO: what if char dies due to status, try to DRY that
+                    self.executeStatus(character)
                     self.clearField()
-                    if not self.enemy_team or not self.team:
-                        return
-                    self.enemysAction(character)
+                    if not character.isDead():
+                        self.enemyAction(character)
                 self.clearField()
-                if not self.enemy_team or not self.team:
-                    return
 
 
 def main():
@@ -148,10 +127,10 @@ def main():
 
     op_team = [dummy1, dummy2, rat]
 
-    # Fight.inspectTarget(shiv)
-    # Fight.inspectTarget(muck)
-    # Fight.inspectTarget(dummy1)
-    # Fight.inspectTarget(rat)
+    Fight.inspectTarget(shiv)
+    Fight.inspectTarget(muck)
+    Fight.inspectTarget(dummy1)
+    Fight.inspectTarget(rat)
 
     # fight
     fight = Fight(team, op_team)

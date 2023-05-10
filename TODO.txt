@@ -24,6 +24,9 @@ TODO:
         special events
         special attacks
 
+    all:
+        add typehints
+
     known bugs:
         solved! fights dont dissappear from place
         solved! if enemy team empty fight is unexitable
