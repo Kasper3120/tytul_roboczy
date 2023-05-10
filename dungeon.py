@@ -28,8 +28,8 @@ class Dungeon:
 
     def generateMap(self, length):
         self.map["a1"] = ["a2"]
-        for i in range(2, length+1):   # TODO: add turnung back
-            self.map[f"a{i}"] = [f"a{i+1}"]
+        for i in range(2, length+1):
+            self.map[f"a{i}"] = [f"a{i+1}", f"a{i-1}"]
             self.squares.append(f"a{i+1}")
         # generate exit
         self.map[f"a{length}"] = ["ex"]
@@ -64,6 +64,7 @@ class Dungeon:
             # enemies_team = []
             self.randomizeEnemies(8, self.enemies[f"a{length-1}"])
             # self.enemies[f"a{length}"] = enemies_team
+        # TODO: generate chests
 
     def visualizeDungeon():
         # to_print = []
@@ -71,7 +72,15 @@ class Dungeon:
         # TODO: finish visualisation:
         #   spilling method
         #   always turn left method
-        pass
+        room = "a1"
+        while room != "ex":
+            print(room)
+            print('=')
+            for turn in map["room"]:
+                if turn[0] == 'a' and int(turn[1]) > int(room[1]):
+                    room = turn
+                else:
+                    continue
 
     def startDungeon(self):
         current_room = "a1"

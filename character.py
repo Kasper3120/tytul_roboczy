@@ -4,7 +4,7 @@ from weapon import Weapon
 from inventory import Inventory
 from util import Util
 
-import pdb
+# import pdb
 
 
 class Character:
@@ -20,7 +20,6 @@ class Character:
         self.status = status
 
     def attack(self, who, attack_dice, crit_dice):
-        # TODO: bug - if no armor function throws an exception
         attack = self.inventory.weapon.getAttack(attack_dice) - who.inventory.getArmor()
         crit_attack = self.inventory.weapon.getCrit(crit_dice) - who.inventory.getArmor()
 
