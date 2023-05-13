@@ -2,6 +2,8 @@
 from util import Util
 from item import Item
 
+from typing import List
+
 
 class Weapon(Item):
     """
@@ -9,24 +11,24 @@ class Weapon(Item):
     int crit = crit chance
     """
 
-    def __init__(self, name="", description="", passive={}, attack=0, special=[0, 0], crit=0):
+    def __init__(self, name: str = "", description: str = "", passive: dir = {}, attack: int = 0, special: List[int] = [0, 0], crit: int = 0):
         super().__init__(name, description, passive)
         self.attack = attack
         self.special = special
         self.crit = crit
 
-    def getAttack(self, dice): return round(self.attack*(dice/12))
+    def getAttack(self, dice: int) -> float: return round(self.attack*(dice/12))
 
-    def getSpecial(self, dice):
+    def getSpecial(self, dice: int) -> int or str:
         return self.special[1] if dice > self.special[0] else 0
 
-    def getCrit(self, dice):
+    def getCrit(self, dice: int) -> float:
         return round(self.attack*1.5) if dice > self.crit else 0
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}:{self.description}:{self.passive}:{self.attack}:{self.special}:{self.crit}"
 
-    def weaponCreator():
+    def weaponCreator() -> None:
         while True:
             name = input("Set name:\n")
             print("Set attack:")

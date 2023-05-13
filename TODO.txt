@@ -26,8 +26,10 @@ TODO:
 
     all:
         add typehints
+        read about passing a list into a func
 
     known bugs:
+        add passive's to weapons (even empty)
         solved! fights dont dissappear from place
         solved! if enemy team empty fight is unexitable
         solved! if team dies player continues exploring

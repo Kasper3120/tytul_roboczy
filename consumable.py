@@ -6,14 +6,14 @@ from util import Util
 
 
 class Consumable(Item):
-    def __init__(self, name="", description="", passive={}, consumed={}):
+    def __init__(self, name: str = "", description: str = "", passive: dict = {}, consumed: dict = {}):
         super().__init__(name, description, passive)
         self.consumed = consumed
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}:{self.description}:{self.passive}:{self.consumed}"
 
-    def consume(self, character):
+    def consume(self, character: Character) -> None:
         for key in self.consumed.keys():
             if key in ("heal", "bleeding", "poisoning", "hurt"):
                 if self.consumed[key][0] == 0:
