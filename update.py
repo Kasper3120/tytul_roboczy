@@ -1,10 +1,12 @@
 #!/bin/python3
 
-from util import Util
+from util import *
 from weapon import Weapon
 from consumable import Consumable
 from character import Character
 from inventory import Inventory
+
+import globals
 
 from os import listdir
 import pdb
@@ -13,22 +15,23 @@ import pdb
 class Update:
     # modify accordingly to your needs
     # last mod: update (add) max_hp to hp
-    def updateAllCharacters():
-        list = listdir("./bin/characters/")
-        for character_file in list:
-            old_char = Util.loadCharacter(character_file.replace(".dat", ""))
+    def updateAllCharacters(controlable: bool):
+        path = globals.controlable if controlable else globals.enemies
+        list = [char.replace(".dat", "") for char in listdir(path)]
+        for character_name in list:
+            old_char = loadCharacter(character_name)
             character_new = Character(
                     old_char.name, old_char.hp,
                     Inventory(old_char.inventory.weapon, old_char.inventory.armor, []),
                     old_char.strength, old_char.agility, []
                     )
-            Util.saveCharacter(character_new)
-            print(f"updated {character_file}")
+            saveCharacter(character_new)
+            print(f"updated {character_name}")
 
     def updateAllWeapons():
-        list = listdir("./bin/items/weapons/")
+        list = listdir(globals.weapons)
         for weapon_file in list:
-            weapon_old = Util.loadWeapon(weapon_file.replace(".dat", ""))
+            weapon_old = loadWeapon(weapon_file.replace(".dat", ""))
             desc = input(f"Description for {weapon_old.name}\n")
             weapon_new = Weapon(
                     weapon_old.name,
@@ -38,10 +41,10 @@ class Update:
                     weapon_old.special,
                     weapon_old.crit
                     )
-            Util.saveWeapon(weapon_new)
+            saveWeapon(weapon_new)
 
     def updateCharacter(name: str, what: str, to):
-        character = Util.loadCharacter(name)
+        character = loadCharacter(name)
         if what == "name":
             character.name = to
         if what == "hp":
@@ -56,10 +59,10 @@ class Update:
             character.status = to
         if what == "inventory":
             character.inventory = to
-        Util.saveCharacter(character)
+        saveCharacter(character)
 
     def updateWeapon(name: str, what: str, to: str):
-        weapon = Util.loadWeapon(name)
+        weapon = loadWeapon(name)
         if what == "name":
             weapon.name = to
         if what == "attack":
@@ -68,16 +71,11 @@ class Update:
             weapon.special = to
         if what == "crit":
             weapon.crit = to
-        Util.saveWeapon(weapon)
+        saveWeapon(weapon)
 
 
 def main():
-    potion = Util.loadConsumable("health potion")
-    character = Util.loadCharacter("Muck")
-    character.inventory.backpack = [potion]
-    Util.saveCharacter(character)
-    Update.updateAllCharacters()
-
+    pass
 
 if __name__ == '__main__':
     main()

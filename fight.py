@@ -3,7 +3,7 @@
 from character import Character
 from weapon import Weapon
 from inventory import Inventory
-from util import Util
+from util import roll, parseInt, loadCharacter
 
 from typing import List
 from random import randrange
@@ -19,31 +19,14 @@ class Fight:
         if enemy_team and team:
             self.fightControlable()
 
-    # TODO: add tests for that
-    def executeStatus(self, character: Character) -> None:
-        for status_name, status_numbers in character.status:
-            status_numbers[0] -= 1
-            if status_name in ("heal", "bleeding", "poisoning", "hurt"):
-                for i in range(0, status_numbers[1]):
-                    if character.hp != character.max_hp:
-                        character.hp += 1
-                if status_numbers[0] == 0:
-                    # del character.status[[status_name, status_numbers]]
-                    character.status.remove([status_name, status_numbers])
-            if status_name == "strength":
-                # TODO: think about that :)
-                pass
-            if status_name == "agility":
-                pass
-
     def attackInterface(self, character: Character) -> None:
         print("Choose an enemy to attack:")
         while True:
             for i, enemy in enumerate(self.enemy_team):
                 print(f"{i}. {enemy.getName()} ({enemy.getHp()})")
             try:
-                chosen_enemy = self.enemy_team[Util.parseInt()]
-                character.attack(chosen_enemy, Util.roll(2), Util.roll(2))
+                chosen_enemy = self.enemy_team[parseInt()]
+                character.attack(chosen_enemy, roll(2), roll(2))
                 break
             except IndexError:
                 print("Wrong input")
@@ -61,7 +44,7 @@ class Fight:
             print("1. Attack.")
             print("2. Special attack.")
             print("3. Choose item")
-            choice = Util.parseInt()
+            choice = parseInt()
             if choice == 1:
                 self.attackInterface(character)
                 return
@@ -88,47 +71,41 @@ class Fight:
     def enemyAction(self, enemy):  # TODO: upgrade
         # chosen_target = self.team[randrange(0, len(self.team))]
         chosen_target = random.choice(self.team)
-        enemy.attack(chosen_target, Util.roll(2), Util.roll(2))
+        enemy.attack(chosen_target, roll(2), roll(2))
 
-    # TODO: bug - fight finishes after 1 full turn
-    # TODO: add if execStat: clearField
     def fightControlable(self):
-        # pdb.set_trace()
         # future problem - when agility is changed it can change the order
         all_chars = self.team + self.enemy_team
         all_chars = sorted(all_chars, key=lambda k: k.agility, reverse=True)
-        # while self.enemy_team and self.team:
         while True:
             for character in all_chars:
-                if character in self.team:
-                    self.executeStatus(character)
+                if character.status:
+                    character.executeStatus()
                     if self.clearField():
                         return
-                    if not character.isDead():
+                if not character.isDead():
+                    if character in self.team:
                         self.chooseAction(character)
-                else:
-                    self.executeStatus(character)
-                    if self.clearField():
-                        return
-                    if not character.isDead():
+                    else:
                         self.enemyAction(character)
-                self.clearField()
+                if self.clearField():
+                    return
 
 
 def main():
 
-    shiv = Util.loadCharacter("Shiv")
-    muck = Util.loadCharacter("Muck")
+    shiv = loadCharacter("Shiv")
+    muck = loadCharacter("Muck")
 
     team = [muck, shiv]
 
-    dummy1 = Util.loadCharacter("Dummy")
+    dummy1 = loadCharacter("Dummy")
     dummy1.setName("Dummy 1")
 
-    dummy2 = Util.loadCharacter("Dummy")
+    dummy2 = loadCharacter("Dummy")
     dummy2.setName("Dummy 2")
 
-    rat = Util.loadCharacter("Rat")
+    rat = loadCharacter("Rat")
 
     op_team = [dummy1, dummy2, rat]
 

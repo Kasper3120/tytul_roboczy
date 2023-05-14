@@ -2,7 +2,7 @@
 
 from item import Item
 from character import Character
-from util import Util
+from util import saveConsumable, loadConsumable
 
 
 class Consumable(Item):
@@ -48,11 +48,11 @@ def main():
     # print(consumable)
     # i = input("Do you want to save that item? (y/n)")
     # if i == 'y':
-    #     Util.saveConsumable(consumable)
+    #     saveConsumable(consumable)
 
-    consumable = Util.loadConsumable("health potion")
+    consumable = loadConsumable("health potion")
     consumable.consumed = {"heal": [2, 3]}
-    Util.saveConsumable(consumable)
+    saveConsumable(consumable)
     print(f"modified: {consumable}")
     # TODO: popraw potke i ogarnij kreator (consumed_points powinno być {"":[\n,\n]} chyba)
 

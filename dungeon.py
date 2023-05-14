@@ -1,16 +1,16 @@
 from fight import Fight
 from random import randrange
 from character import Character
-from consumable import Consumable
+from item import Item
 
-from util import Util
+from util import roll, loadCharacter, loadConsumable, parseInt
 from typing import List
 
 import pdb
 
 
 class Dungeon:
-    def __init__(self, team: List[Character], length: int = 5):
+    def __init__(self, team: List[Character], length: int = 5, enemies_pool: List[Character] = [], items_pool: List[Item] = []):
         self.map = {}
         # visited = []
         self.squares = ["a1", "a2"]
@@ -19,18 +19,20 @@ class Dungeon:
         self.team = team
         self.length = length
         self.generateDungeon(2)
+        self.enemies_pool = enemies_pool # TODO: add enemies/items_pool usage
+        self.items_pool = items_pool
         print(self.enemies)
 
     def randomizeEnemies(self, num: int) -> List[Character]:
         enemies_team = []
         for i in range(0, num):
-            roll = Util.roll()
-            if roll < 3:
-                enemies_team.append(Util.loadCharacter("Rat"))
-            elif roll < 5:
-                enemies_team.append(Util.loadCharacter("Spider"))
+            roll_enemies = roll()
+            if roll_enemies < 3:
+                enemies_team.append(loadCharacter("Rat", False))
+            elif roll_enemies < 5:
+                enemies_team.append(loadCharacter("Spider", False))
             else:
-                enemies_team.append(Util.loadCharacter("Skeleton"))
+                enemies_team.append(loadCharacter("Skeleton", False))
         return enemies_team
 
     def generateMap(self) -> None:
@@ -60,10 +62,10 @@ class Dungeon:
         self.generateMap()
         # generate enemies
         for room in self.squares:
-            if Util.roll() > 4:
+            if roll() > 4:
                 # how many enemies
-                roll = Util.roll(2)
-                num = int(roll/2)
+                roll_enemies = roll(2)
+                num = int(roll_enemies/2)
                 # which enemies
                 self.enemies[room] = self.randomizeEnemies(num+add)
         # if no enemies generate harder fight at the end
@@ -73,7 +75,7 @@ class Dungeon:
             # self.enemies[f"a{self.length}"] = enemies_team
         # TODO: generate chests
         # hp potion in 1st room
-        self.chests['a1'] = [Util.loadConsumable("health potion")]
+        self.chests['a1'] = [loadConsumable("health potion")]
 
     def visualizeDungeon() -> int:
         # to_print = []
@@ -99,7 +101,7 @@ class Dungeon:
         chosen_character = False
         while not chosen_character:
             try:
-                input = Util.parseInt()
+                input = parseInt()
                 if input == len(self.team):
                     return False
                 chosen_character = self.team[input]
@@ -117,19 +119,20 @@ class Dungeon:
         print("The chest contained:")
         print(chest)
         for item in chest:
-            print(f"Choose character to pick up the {item}:")
+            print(f"Choose character to pick up the {item.name}:")
             for i, character in enumerate(self.team):
                 print(f"{i}. {character.getName()}")
             chosen_character = False
             while not chosen_character:
                 try:
-                    input = Util.parseInt()
+                    input = parseInt()
                     chosen_character = self.team[input]
                 except IndexError:
                     print("No character under that index")
             chosen_character.pickUpItem(item)
         self.chests.pop(room)
 
+    # bug you can enter fight once again and enemies are already dead (>=0 hp)
     def startDungeon(self) -> None:
         current_room = "a1"
         while True:
@@ -137,6 +140,7 @@ class Dungeon:
             if current_room in self.enemies.keys():
                 # TODO: inspect that bug further
                 self.team = Fight(self.team, self.enemies[current_room]).aftermath()
+                self.enemies.pop(current_room)
             if not self.team:
                 print("You lost!")
                 return
@@ -175,12 +179,12 @@ class Dungeon:
         """
         self.map["a1"] = ["a2"]
         self.map["a2"] = ["b2", "ex"]
-        self.enemies = {"a2": [Util.loadCharacter("Rat")], "b2": []}
+        self.enemies = {"a2": [loadCharacter("Rat")], "b2": []}
         self.startDungeon()
 
 
 def main():
-    team = [Util.loadCharacter("Henry"), Util.loadCharacter("Muck")]
+    team = [loadCharacter("Henry"), loadCharacter("Muck")]
     dung = Dungeon(team, 7)
     dung.startDungeon()
 

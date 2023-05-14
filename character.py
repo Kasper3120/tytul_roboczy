@@ -2,11 +2,11 @@
 
 from weapon import Weapon
 from inventory import Inventory
-from util import Util
 from item import Item
+from util import parseInt, weaponSearch, saveCharacter
 # from character import Character
 
-# import pdb
+import pdb
 
 
 class Character:
@@ -34,25 +34,43 @@ class Character:
         else:
             print(f"{self.name}'s attack ({attack}) didn't penetrate {who.name}'s armor")
 
-    # TODO: DEBUG!!!
     def chooseItem(self) -> bool:
         for i, item in enumerate(self.inventory.backpack):
             print(f"{i}. {item.name}")
         print(f"{len(self.inventory.backpack)}. Return to menu.")
-        chosen_item = Util.parseInt()
+        chosen_item = parseInt()
         if chosen_item == len(self.inventory.backpack):
             return False
         elif chosen_item < 0 or chosen_item >= len(self.inventory.backpack):
             print("Wrong item number")
         else:
-            if not self.inventory.backpack[chosen_item].consume(self):
-                print("This item is not consumable")
-            else:
-                self.backpack.pop(chosen_item)
-                print(f"{self.inventory.backpack[chosen_item]} got consumed")
-                return True
+            self.inventory.backpack[chosen_item].consume(self)
+            print(f"{self.inventory.backpack[chosen_item].name} got consumed")
+            self.inventory.backpack.pop(chosen_item)
+            return True
             # TODO: exclude not consumable
             # TODO: uniq + count
+
+    # TODO: add tests for that
+    def executeStatus(self) -> None:
+        pdb.set_trace()
+        for status_name, status_numbers in self.status:
+            status_numbers[0] -= 1
+            if status_name in ("heal", "bleeding", "poisoning", "hurt"):
+                if status_name == "heal":
+                    self.hp += status_numbers[1]
+                    if self.hp > self.max_hp:
+                        self.hp = self.max_hp
+                else:
+                    self.hp -= status_numbers[1]
+                if status_numbers[0] == 0:
+                    # del self.status[[status_name, status_numbers]]
+                    self.status.remove([status_name, status_numbers])
+            if status_name == "strength":
+                # TODO: think about that :)
+                pass
+            if status_name == "agility":
+                pass
 
     def special(self, weapon, who, special_dice): pass
 
@@ -74,23 +92,22 @@ def characterCreator() -> None:
     while True:
         name = input("Set name\n")
         print("Set hp")
-        hp = Util.parseInt()
+        hp = parseInt()
         print("Set strength")
-        strength = Util.parseInt()
+        strength = parseInt()
         print("Set agility")
-        agility = Util.parseInt()
-        # TODO: status
+        agility = parseInt()
         print("Set Armor")
-        armor = Util.parseInt()
+        armor = parseInt()
         print("Set Weapon")
-        weapon = Util.weaponSearch()
+        weapon = weaponSearch()
         character = Character(name, hp, Inventory(weapon, armor, {}), strength, agility)
         while True:
             print(character)
             print("Save character? (y/n-try again/0-exit)")
             choice = input()
             if choice == 'y':
-                Util.saveCharacter(character)
+                saveCharacter(character)
                 return
             elif choice == 'n':
                 break

@@ -1,17 +1,16 @@
 #!/bin/python3
-from util import Util
+from util import parseInt, saveWeapon
 from item import Item
 
 from typing import List
 
 
 class Weapon(Item):
-    """
-    String name, Int attack, Int special[chance, dmg/string]
-    int crit = crit chance
-    """
-
     def __init__(self, name: str = "", description: str = "", passive: dir = {}, attack: int = 0, special: List[int] = [0, 0], crit: int = 0):
+        """
+        String name, Int attack, Int special[chance, dmg/string]
+        int crit = crit chance
+        """
         super().__init__(name, description, passive)
         self.attack = attack
         self.special = special
@@ -32,13 +31,13 @@ class Weapon(Item):
         while True:
             name = input("Set name:\n")
             print("Set attack:")
-            attack = Util.parseInt()
+            attack = parseInt()
             print("Set crit chance:")
-            crit_chance = Util.parseInt()
+            crit_chance = parseInt()
             print("Set special chance:")
-            spec_chance = Util.parseInt()
+            spec_chance = parseInt()
             print("Set special damage:")
-            special_dmg = Util.parseInt()
+            special_dmg = parseInt()
             weapon = Weapon(
                     name,
                     attack,
@@ -50,7 +49,7 @@ class Weapon(Item):
                 print("Save weapon? (y/n-try again/0-exit)")
                 choice = input()
                 if choice == 'y':
-                    Util.saveWeapon(weapon)
+                    saveWeapon(weapon)
                     return
                 elif choice == 'n':
                     break
