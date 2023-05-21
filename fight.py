@@ -16,6 +16,7 @@ class Fight:
     def __init__(self, team: List[Character], enemy_team: List[Character]) -> None:
         self.team = team
         self.enemy_team = enemy_team
+        self.turn = None
         if enemy_team and team:
             self.fightControlable()
 

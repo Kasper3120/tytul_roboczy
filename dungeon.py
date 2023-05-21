@@ -18,10 +18,10 @@ class Dungeon:
         self.chests = {}
         self.team = team
         self.length = length
-        self.generateDungeon(2)
+        self.generateDungeon(0)
         self.enemies_pool = enemies_pool # TODO: add enemies/items_pool usage
         self.items_pool = items_pool
-        print(self.enemies)
+        self.current_room = "a1"
 
     def randomizeEnemies(self, num: int) -> List[Character]:
         enemies_team = []
@@ -70,19 +70,13 @@ class Dungeon:
                 self.enemies[room] = self.randomizeEnemies(num+add)
         # if no enemies generate harder fight at the end
         if not self.enemies:
-            # enemies_team = []
-            self.randomizeEnemies(8, self.enemies[f"a{self.length-1}"])
-            # self.enemies[f"a{self.length}"] = enemies_team
+            self.enemies[f"a{self.length-1}"] = self.randomizeEnemies(8)
         # TODO: generate chests
         # hp potion in 1st room
         self.chests['a1'] = [loadConsumable("health potion")]
 
     def visualizeDungeon() -> int:
-        # to_print = []
-        # while True:
         # TODO: finish visualisation:
-        #   spilling method
-        #   always turn left method
         room = "a1"
         while room != "ex":
             print(room)
@@ -92,6 +86,13 @@ class Dungeon:
                     room = turn
                 else:
                     continue
+
+    def useItemIndex(self, index) -> bool:
+        try:
+            # TODO chooseItem -> to model
+            return self.team[index].chooseItem()
+        except IndexError:
+            return False
 
     def useItem(self) -> bool:
         print("Choose character:")
@@ -109,7 +110,17 @@ class Dungeon:
                 print("No character under that index")
         return chosen_character.chooseItem()
 
-    # TODO: bug - chosing each item dont work, chosen char just takes all items
+    def getChest(self, room: str) -> List[Item] or bool:
+        try:
+            return self.chests[room]
+        except IndexError:
+            print("Error! No chest in that room")
+            return False
+
+    def takeItemFromChest(self, room: str, item: Item, character: Character) -> None:
+        character.pickUpItem(item)
+        self.chests.pop(room)
+
     def openChest(self, room: str) -> bool:
         try:
             chest = self.chests[room]
@@ -132,15 +143,28 @@ class Dungeon:
             chosen_character.pickUpItem(item)
         self.chests.pop(room)
 
+    def initFight(self) -> bool:
+        # pdb.set_trace()
+        try:
+            self.team = Fight(self.team, self.enemies[self.current_room]).aftermath()
+            self.enemies.pop(self.current_room)
+            return True if self.team else False
+        except KeyError:
+            print("Key Error: ")
+            print(f"enemies.keys(): {self.enemies.keys()}")
+            print(f"current_room: {self.current_room}")
+            print("foo")
+            exit(-1)
+
     # bug you can enter fight once again and enemies are already dead (>=0 hp)
     def startDungeon(self) -> None:
-        current_room = "a1"
+        self.current_room = "a1"
         while True:
             # pdb.set_trace()
-            if current_room in self.enemies.keys():
+            if self.current_room in self.enemies.keys():
                 # TODO: inspect that bug further
-                self.team = Fight(self.team, self.enemies[current_room]).aftermath()
-                self.enemies.pop(current_room)
+                self.team = Fight(self.team, self.enemies[self.current_room]).aftermath()
+                self.enemies.pop(self.current_room)
             if not self.team:
                 print("You lost!")
                 return
@@ -150,25 +174,25 @@ class Dungeon:
                 for character in self.team:
                     print(f"{character.getName()}[Hp:{character.getHp()}]")
                 print("Choose a room:")
-                print(self.map[current_room])
+                print(self.map[self.current_room])
                 print("1. Use an item")
                 i = 2
                 # idea: if there's a problem with indexing - add a list[index]=action
-                if current_room in self.chests.keys():
+                if self.current_room in self.chests.keys():
                     print(f"{i}. Open chest")
                     i += 1
                 choice = input()
-                if choice in self.map[current_room]:
-                    current_room = choice
+                if choice in self.map[self.current_room]:
+                    self.current_room = choice
                     break
                 elif choice == "1":
                     self.useItem()
-                elif choice == "2" and current_room in self.chests.keys():
-                    self.openChest(current_room)
+                elif choice == "2" and self.current_room in self.chests.keys():
+                    self.openChest(self.current_room)
                 else:
                     print("There's no such room near your position")
                     print("Option not found")
-            if current_room == "ex":
+            if self.current_room == "ex":
                 break
         print("You have managed to leave the dungeon")
 
@@ -181,6 +205,17 @@ class Dungeon:
         self.map["a2"] = ["b2", "ex"]
         self.enemies = {"a2": [loadCharacter("Rat")], "b2": []}
         self.startDungeon()
+
+    def getCharacterItems(self, index) -> List[str]:
+        character = self.team[index]
+        return character.getItemNamesList()
+
+    def isCharacterIndex(self, index: int) -> bool:
+        try:
+            if self.team[index]:
+                return True
+        except IndexError:
+            return False
 
 
 def main():

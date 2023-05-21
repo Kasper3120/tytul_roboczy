@@ -34,6 +34,17 @@ class Character:
         else:
             print(f"{self.name}'s attack ({attack}) didn't penetrate {who.name}'s armor")
 
+    def chooseItemIndex(self, index: int) -> bool:
+        try:
+            self.inventory.backpack[index].consume(self)
+            self.inventory.backpack.pop(index)
+            return True
+        except IndexError:
+            return False
+
+    def getItemNamesList(self):
+        return [item.name for item in self.inventory.backpack]
+
     def chooseItem(self) -> bool:
         for i, item in enumerate(self.inventory.backpack):
             print(f"{i}. {item.name}")
