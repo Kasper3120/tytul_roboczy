@@ -13,12 +13,14 @@ import pdb
 
 class Fight:
 
-    def __init__(self, team: List[Character], enemy_team: List[Character]) -> None:
+    def __init__(self, team: List[Character], enemy_team: List[Character]) -> bool:
         self.team = team
         self.enemy_team = enemy_team
-        self.turn = None
-        if enemy_team and team:
-            self.fightControlable()
+        self.queue = []
+        self.restartQueue()
+        return self if enemy_team and team else False
+        # if enemy_team and team:
+        #     self.fightControlable()
 
     def attackInterface(self, character: Character) -> None:
         print("Choose an enemy to attack:")
@@ -32,11 +34,26 @@ class Fight:
             except IndexError:
                 print("Wrong input")
 
-    def inspectTarget(target: Character) -> None:
-        print(target)
-
-    def aftermath(self) -> List[Character]:
+    def getTeam(self) -> List[Character]:
         return self.team
+
+    def isFinished(self) -> bool:
+        return not (self.team and self.enemy_team)
+
+    # TODO: check
+    def restartQueue(self):
+        self.queue = [[character, True, True] for character in self.team]
+        self.queue += [[enemy, True, False] for enemy in self.enemy_team]
+        self.queue = sorted(self.queue, key=lambda k: k[0].agility, reverse=True)
+        self.team = [
+                character
+                for character, active, is_controlable in self.queue
+                if is_controlable]
+        self.enemy_team = [
+                character
+                for character, active, is_controlable in self.queue
+                if not is_controlable
+                ]
 
     def chooseAction(self, character: Character) -> None:
         while True:
@@ -58,16 +75,14 @@ class Fight:
             else:
                 print("Wrong input")
 
-    def clearField(self) -> bool:
+    def clearField(self) -> List[str]:
         # pdb.set_trace()
         before = self.team + self.enemy_team
         self.team = [member for member in self.team if not member.isDead()]
         self.enemy_team = [member for member in self.enemy_team if not member.isDead()]
         after = self.team + self.enemy_team
         comparement = [x for x in before + after if x not in before or x not in after]
-        for character in comparement:
-            print(f"{character.name} died")
-        return not (self.team and self.enemy_team)
+        return [character.name for character in comparement]
 
     def enemyAction(self, enemy):  # TODO: upgrade
         # chosen_target = self.team[randrange(0, len(self.team))]
@@ -82,8 +97,9 @@ class Fight:
             for character in all_chars:
                 if character.status:
                     character.executeStatus()
-                    if self.clearField():
-                        return
+                    self.clearField()
+                    if self.isFinished():
+                        return False
                 if not character.isDead():
                     if character in self.team:
                         self.chooseAction(character)
@@ -91,6 +107,34 @@ class Fight:
                         self.enemyAction(character)
                 if self.clearField():
                     return
+
+    def executeStatus(self, character):
+        if character.status:
+            character.executeStatus()
+            return clearField
+
+    # TODO: main problem: communication if character dies, two copies, character in queue
+    # and character in team, research that
+    def makeAction(self) -> bool:
+        self.clearField()
+        for i, character, attacked, is_controlable in enumerate(self.queue):
+            # player's action
+            if not attacked and is_controlable:
+                self.queue[i][1] = False
+                return True
+            # enemy's action
+            elif not attacked:
+                if character.status:
+                    character.executeStatus()
+                    if self.clearField():
+                        return False
+                self.enemyAction(character)
+                self.queue[i][1] = False
+                return False
+            else:
+                continue
+        self.restartQueue()
+        return False
 
 
 def main():

@@ -10,13 +10,13 @@ from dungeon import Dungeon
 
 class Controler():
     def __init__(self):
-        self.team = []
+        self.init_team = []
         self.length = 1
         self.dungeon = None
         self.finished = False
 
     def setTeam(self, team: list) -> None:
-        self.team = team
+        self.init_team = team
 
     def setLength(self, length: int) -> None:
         self.length = length
@@ -30,6 +30,22 @@ class Controler():
         except IndexError:
             return False
 
+    def isCharacterOnIndex(self, index: int):
+        try:
+            if self.dungeon.team[index]:
+                return True
+        except IndexError:
+            return False
+
+    def isRoomInDirections(self, user_input):
+        # is user_input in directions doesn't work properly due to List[str]
+        for room in self.getDirections():
+            if user_input:
+                return True
+            else:
+                continue
+        return False
+
     def namesToCharacters(team: List[str]) -> list:
         character_team = []
         for name in team:
@@ -37,11 +53,12 @@ class Controler():
             character_team.append(character)
         return character_team
 
-    def initDungeon(self, enemies_pool) -> None:
-        if not self.team or self.length == 1:
-            print("Before starting a dungeon, you must have a team")
+    def initDungeon(self, enemies_pool) -> bool:
+        if not self.init_team or self.length == 1:
+            return False
         else:
-            self.dungeon = Dungeon(self.team, self.length, enemies_pool)
+            self.dungeon = Dungeon(self.init_team, self.length, enemies_pool)
+            return True
 
     def isChestInRoom(self) -> bool:
         room = self.dungeon.current_room
@@ -58,15 +75,21 @@ class Controler():
         else:
             return False
 
-    def getTeamStatusStr(self) -> list:
+    def getChestNames(self, room=None):
+        return self.dungeon.getChestStrList(room)
+
+    def getTeamWithHpStr(self) -> list:
         return [f"{character.getName()} hp: {character.getHp()}"
-                for character in self.team]
+                for character in self.dungeon.team]
 
     def getTeamLength(self) -> int:
         return len(self.dungeon.team)
 
     def initFight(self) -> bool:
         return self.dungeon.initFight()
+
+    def getFightStatusControler(self):
+        return self.dungeon.getFightStatus()
 
     def setRoom(self, room) -> bool:
         if room == 'ex':
@@ -75,11 +98,28 @@ class Controler():
             self.dungeon.current_room = room
             return False
 
-    def useItem(self, index) -> bool:
-        return True if self.dungeon.useItemIndex(index) else False
+    def useItem(self, character_index, item_index) -> bool:
+        return True if self.dungeon.useItemIndex(character_index, item_index) else False
 
     def getCharacterInventoryStr(self, index) -> List[str]:
         return self.dungeon.getCharacterItems(index)
+
+    def takeItemChest(self, character_index, room=None):
+        self.dungeon.takeFirstItemFromChestAllIndex(character_index)
+
+    def deleteChest(self, room=None):
+        if not room:
+            room = self.dungeon.current_room
+        self.dungeon.chests.pop(room)
+
+    def takeTurnFight(self):
+        if self.dungeon.current_fight.makeAction():
+            return True
+        else:
+            return False
+    # TODO: finish
+    def executeStatus(self):
+        pass
 
 
 def main():

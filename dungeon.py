@@ -22,6 +22,7 @@ class Dungeon:
         self.enemies_pool = enemies_pool # TODO: add enemies/items_pool usage
         self.items_pool = items_pool
         self.current_room = "a1"
+        self.current_fight = None
 
     def randomizeEnemies(self, num: int) -> List[Character]:
         enemies_team = []
@@ -87,10 +88,10 @@ class Dungeon:
                 else:
                     continue
 
-    def useItemIndex(self, index) -> bool:
+    def useItemIndex(self, character_index, item_index) -> bool:
         try:
             # TODO chooseItem -> to model
-            return self.team[index].chooseItem()
+            return True if self.team[character_index].consumeItemIndex(item_index) else False
         except IndexError:
             return False
 
@@ -110,16 +111,20 @@ class Dungeon:
                 print("No character under that index")
         return chosen_character.chooseItem()
 
-    def getChest(self, room: str) -> List[Item] or bool:
+    def getChestStrList(self, room=None) -> List[str]:
+        if not room:
+            room = self.current_room
         try:
-            return self.chests[room]
+            return [item.name for item in self.chests[room]]
         except IndexError:
             print("Error! No chest in that room")
             return False
 
-    def takeItemFromChest(self, room: str, item: Item, character: Character) -> None:
-        character.pickUpItem(item)
-        self.chests.pop(room)
+    def takeFirstItemFromChestAllIndex(self, character_index, room=None) -> None:
+        if not room:
+            room = self.current_room
+        self.team[character_index].pickUpItem(self.chests[room][0])
+        self.chests[room].pop(0)
 
     def openChest(self, room: str) -> bool:
         try:
@@ -143,17 +148,22 @@ class Dungeon:
             chosen_character.pickUpItem(item)
         self.chests.pop(room)
 
+    def getFightStatus(self):
+        return self.current_fight.isFinished()
+
     def initFight(self) -> bool:
         # pdb.set_trace()
         try:
-            self.team = Fight(self.team, self.enemies[self.current_room]).aftermath()
-            self.enemies.pop(self.current_room)
-            return True if self.team else False
+            self.current_fight = Fight(self.team, self.enemies[self.current_room])
+            if self.current_fight:
+                self.enemies.pop(self.current_room)
+                return True
+            else:
+                return False
         except KeyError:
             print("Key Error: ")
             print(f"enemies.keys(): {self.enemies.keys()}")
             print(f"current_room: {self.current_room}")
-            print("foo")
             exit(-1)
 
     # bug you can enter fight once again and enemies are already dead (>=0 hp)

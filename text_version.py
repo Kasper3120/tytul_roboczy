@@ -7,6 +7,7 @@ from consumable import Consumable
 
 from typing import List
 from sys import exit
+import pdb
 
 
 class TextVersion():
@@ -34,46 +35,106 @@ class TextVersion():
                 print("Option not available")
 
     def printTeamStatusEnum(self):
-        status_list = self.controler.getTeamStatusStr()
+        status_list = self.controler.getTeamWithHpStr()
         print("Team:")
         for i, status in enumerate(status_list):
             print(f"{i}. {status}")
 
-    def chooseCharacter(self):
+    def chooseCharacterIndexTest(self) -> int:
         print("Choose character:")
         self.printTeamStatusEnum()
         team_len = self.controler.getTeamLength()
         print(f"{team_len}. Exit")
         while True:
             character_index = parseInt()
-            if self.controler.
-                break
+            if self.controler.isCharacterOnIndex(character_index):
+                return character_index
             elif character_index == team_len:
-                break
+                return -1
             else:
                 continue
 
+    def useItem(self):
+        character_index = self.chooseCharacterIndexTest()
+        if character_index != -1:
+            item_list = self.controler.getCharacterInventoryStr(character_index)
+            for i, item in enumerate(item_list):
+                print(f"{i}. {item}")
+            print(f"{len(item_list)}. Exit")
+            while True:
+                item_index = parseInt()
+                if item_index == len(item_list):
+                    break
+                elif self.controler.useItem(character_index, item_index):
+                    print("Item consumed")
+                    break
+                else:
+                    print("Wrong input")
+        else:
+            print("Wrong input")
+
     def roomMenu(self) -> bool:
-        directions = self.controler.getDirections()
-        self.printTeamStatusEnum()
-        print("Choose a room:")
-        print(', '.join(directions))
-        print("1. Use an item")
-        i = 2
-        if self.controler.isChestInRoom():
-            print(f"{i}. Open chest")
-            i += 1
         while True:
+            directions = self.controler.getDirections()
+            directions = ', '.join(directions)
+            self.printTeamStatusEnum()
+            print("Choose a room:")
+            print(directions)
+            print("1. Use an item")
+            i = 2
+            is_chest = self.controler.isChestInRoom()
+            if is_chest:
+                print(f"{i}. Open chest")
+                i += 1
             choice = input()
-            if choice in directions:
+            if choice == "1":
+                self.useItem()
+            elif choice == "2" and is_chest:
+                self.openChest()
+            elif self.controler.isRoomInDirections(choice):
                 return True if self.controler.setRoom(choice) else False
-            elif choice == "1":
-                character = self.chooseCharacter()
-            elif choice == "2" and self.current_room in self.chests.keys():
-                self.openChest(self.current_room)
             else:
                 print("There's no such room near your position")
                 print("Option not found")
+
+    def openChest(self):
+        """
+        uses current_room
+        displays all items in chest
+        asks who should take each item
+        passes that information further
+        """
+        item_list = self.controler.getChestNames()
+        print("Items inside:")
+        for item in item_list:
+            print(item)
+        for item in item_list:
+            while True:
+                print(f"Who should take {item}?")
+                choice = self.chooseCharacterIndexTest()
+                if choice != -1:
+                    self.controler.takeItemChest(choice)
+                    break
+                else:
+                    print("Wrong input")
+            self.controler.deleteChest()
+
+    def fightView(self):
+        """
+        init fight
+        while true:
+            for character in sorted
+                whose turn?
+                players:
+                    choose target or use item
+        """
+        if not self.controler.initFight():
+            return False
+        while not self.controler.getFightStatusControler():
+            if self.controler.takeTurnFight():
+                pass # print menu for attacking
+            else:
+                pass # print enemies damages, etc
 
     def newGame(self) -> bool:
         # new game
@@ -82,11 +143,12 @@ class TextVersion():
         length = self.chooseDifficulity()
         self.controler.setTeam(Controler.namesToCharacters(team_names))
         self.controler.setLength(length)
-        self.controler.initDungeon(enemies_pool=['foo'])
+        if not self.controler.initDungeon(enemies_pool=['foo']):
+            print("Before starting a dungeon, you must have a team")
+            return
         while True:
-            if self.controler.isFightInRoom:
-                if not self.controler.initFight():
-                    return False
+            if self.controler.isFightInRoom():
+                self.fight()
             if self.roomMenu():
                 return True
 
