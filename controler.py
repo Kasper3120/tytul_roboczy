@@ -125,7 +125,7 @@ class Controler():
     def getCurrentCharacterInventory(self):
         return self.current_fight.current_char.getItemNamesList()
 
-    def useItemCurrentCharacter(item_index):
+    def useItemCurrentCharacter(self, item_index):
         return True if self.fight.useItemCurrentCharacter(item_index) else False
 
     def getEnemyTeamWithHpStr(self) -> list:
