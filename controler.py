@@ -132,6 +132,22 @@ class Controler():
         return [f"{character.getName()} hp: {character.getHp()}"
                 for character in self.fight.enemy_team]
 
+    def getCurrentCharacterName(self):
+        return self.current_fight.current_char.getName()
+
+    def getCurrentCharacterHP(self):
+        return self.current_fight.current_char.getHp()
+
+    def getCurrentCharacterInventory(self):
+        return self.current_fight.current_char.getItemNamesList()
+
+    def useItemCurrentCharacter(self, item_index):
+        return True if self.fight.useItemCurrentCharacter(item_index) else False
+
+    def getEnemyTeamWithHpStr(self) -> list:
+        return [f"{character.getName()} hp: {character.getHp()}"
+                for character in self.fight.enemy_team]
+
     def takeTurnFight(self):
         """returns string to be printed or False if menu should be displayed"""
         init_output = self.dungeon.current_fight.initTurn()

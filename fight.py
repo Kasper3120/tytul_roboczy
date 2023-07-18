@@ -54,7 +54,7 @@ class Fight:
         returns dead characters names"""
         # sorting queue
         self.queue = sorted(self.queue, key=lambda k: k[0].agility, reverse=True)
-        # safe queue_characters to teams and delete dead characters
+        # save queue_characters to teams and delete dead characters
         return self.clearField()
 
     def clearField(self):
@@ -150,6 +150,7 @@ class Fight:
                     self.current_char = self.queue[i][0]
                     return False, status_info
             # enemy's action
+            elif not attacked:
                 if character.status:
                     status_info = character.executeStatus()
                     dead_info_status = self.sortQueue()
