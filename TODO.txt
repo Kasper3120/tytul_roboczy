@@ -25,7 +25,6 @@ TODO:
         special attacks
 
     all:
-        add typehints
         read about passing a list into a func
 
     known bugs:
@@ -33,18 +32,3 @@ TODO:
         solved! fights dont dissappear from place
         solved! if enemy team empty fight is unexitable
         solved! if team dies player continues exploring
-            Traceback (most recent call last):
-      File "/home/kasper/python/tytul_roboczy/text_version.py", line 118, in <module>
-        main()
-      File "/home/kasper/python/tytul_roboczy/text_version.py", line 114, in main
-        TextVersion()
-      File "/home/kasper/python/tytul_roboczy/text_version.py", line 27, in __init__
-        self.newGame()
-      File "/home/kasper/python/tytul_roboczy/text_version.py", line 68, in newGame
-        if not self.controler.initFight():
-      File "/home/kasper/python/tytul_roboczy/controler.py", line 60, in initFight
-        return self.dungeon.initFight()
-      File "/home/kasper/python/tytul_roboczy/dungeon.py", line 143, in initFight
-        self.team = Fight(self.team, self.enemies[self.current_room]).aftermath()
-    KeyError: 'a3'
-

@@ -13,12 +13,12 @@ import pdb
 
 class Fight:
 
-    def __init__(self, team: List[Character], enemy_team: List[Character]) -> bool:
+    def __init__(self, team: List[Character], enemy_team: List[Character]):
         self.team = team
         self.enemy_team = enemy_team
         self.queue = []
+        self.current_character = self.team[0]
         self.restartQueue()
-        return self if enemy_team and team else False
         # if enemy_team and team:
         #     self.fightControlable()
 
@@ -40,7 +40,6 @@ class Fight:
     def isFinished(self) -> bool:
         return not (self.team and self.enemy_team)
 
-    # TODO: check
     def restartQueue(self):
         self.queue = [[character, True, True] for character in self.team]
         self.queue += [[enemy, True, False] for enemy in self.enemy_team]
@@ -54,7 +53,9 @@ class Fight:
                 for character, active, is_controlable in self.queue
                 if not is_controlable
                 ]
+        self.current_character = self.queue[0]
 
+    # old code
     def chooseAction(self, character: Character) -> None:
         while True:
             print(f"{character.getName()}'s turn. Hp:{character.hp}")
@@ -84,10 +85,10 @@ class Fight:
         comparement = [x for x in before + after if x not in before or x not in after]
         return [character.name for character in comparement]
 
-    def enemyAction(self, enemy):  # TODO: upgrade
+    def enemyAction(self, enemy) -> str:  # TODO: upgrade
         # chosen_target = self.team[randrange(0, len(self.team))]
         chosen_target = random.choice(self.team)
-        enemy.attack(chosen_target, roll(2), roll(2))
+        return enemy.attack(chosen_target, roll(2), roll(2))
 
     def fightControlable(self):
         # future problem - when agility is changed it can change the order
@@ -111,19 +112,29 @@ class Fight:
     def executeStatus(self, character):
         if character.status:
             character.executeStatus()
-            return clearField
+            return self.clearField()
 
     # TODO: main problem: communication if character dies, two copies, character in queue
     # and character in team, research that
+    # change character
+    # set status
+    # return status changes
+    # check if controlable
+    # y- show what can character do
+    # attack
+    # n- autoattack
+    # show changes
     def makeAction(self) -> bool:
         self.clearField()
-        for i, character, attacked, is_controlable in enumerate(self.queue):
+        for i, character_status in enumerate(self.queue):
+            character, has_attacked, is_controlable = character_status
+            print(character.getName(), has_attacked, is_controlable)
             # player's action
-            if not attacked and is_controlable:
+            if not has_attacked and is_controlable:
                 self.queue[i][1] = False
                 return True
             # enemy's action
-            elif not attacked:
+            elif not has_attacked:
                 if character.status:
                     character.executeStatus()
                     if self.clearField():
