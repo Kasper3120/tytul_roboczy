@@ -160,7 +160,7 @@ class Dungeon:
             self.current_fight = Fight(self.team, self.enemies[self.current_room])
             if self.current_fight:
                 self.enemies.pop(self.current_room)
-                return True
+                return not self.current_fight.isFinished()
             else:
                 return False
         except KeyError:
