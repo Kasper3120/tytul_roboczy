@@ -1,3 +1,6 @@
+#!/bin/python3
+# -*- coding: utf-8 -*-
+
 from fight import Fight
 from random import randrange
 from character import Character

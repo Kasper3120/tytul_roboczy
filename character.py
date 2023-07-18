@@ -22,18 +22,18 @@ class Character:
         self.agility = agility
         self.status = status
 
-    def attack(self, who, attack_dice: int, crit_dice: int):
-        attack = self.inventory.weapon.getAttack(attack_dice) - who.inventory.getArmor()
-        crit_attack = self.inventory.weapon.getCrit(crit_dice) - who.inventory.getArmor()
+    def attack(self, target, attack_dice: int, crit_dice: int) -> str:
+        attack = self.inventory.weapon.getAttack(attack_dice) - target.inventory.getArmor()
+        crit_attack = self.inventory.weapon.getCrit(crit_dice) - target.inventory.getArmor()
 
         if crit_attack > 0:
-            who.hp -= crit_attack
-            return f"{self.name} attacks criticaly {who.name} for {crit_attack} hp"
+            target.hp -= crit_attack
+            return f"{self.name} attacks criticaly {target.name} for {crit_attack} hp"
         elif attack > 0:
-            who.hp -= attack
-            return f"{self.name} attacks {who.name} for {attack} hp"
+            target.hp -= attack
+            return f"{self.name} attacks {target.name} for {attack} hp"
         else:
-            return f"{self.name}'s attack ({attack}) didn't penetrate {who.name}'s armor"
+            return f"{self.name}'s attack ({attack}) didn't penetrate {target.name}'s armor"
 
     def consumeItemIndex(self, index: int) -> bool:
         try:

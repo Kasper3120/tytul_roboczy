@@ -191,7 +191,7 @@ class TextVersion():
             return
         while True:
             if self.controler.isFightInRoom():
-                self.fight()
+                self.fightView()
             if self.roomMenu():
                 return True
 

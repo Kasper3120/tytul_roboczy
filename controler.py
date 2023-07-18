@@ -86,12 +86,15 @@ class Controler():
         return len(self.dungeon.team)
 
     def initFight(self) -> bool:
+        """inits fight and returns true if it was successful"""
         return self.dungeon.initFight()
 
-    def getFightStatusControler(self):
+    def getFightStatusControler(self) -> bool:
+        """Returns false if fight is over"""
         return self.dungeon.getFightStatus()
 
     def setRoom(self, room) -> bool:
+        """sets room and checks if dungeon is finished (true)"""
         if room == 'ex':
             return True
         else:
@@ -99,6 +102,7 @@ class Controler():
             return False
 
     def useItem(self, character_index, item_index) -> bool:
+        """returns true if usage is successful"""
         return True if self.dungeon.useItemIndex(character_index, item_index) else False
 
     def getCharacterInventoryStr(self, index) -> List[str]:

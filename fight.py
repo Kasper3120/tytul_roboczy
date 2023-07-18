@@ -13,7 +13,7 @@ import pdb
 
 class Fight:
 
-    def __init__(self, team: List[Character], enemy_team: List[Character]) -> bool:
+    def __init__(self, team: List[Character], enemy_team: List[Character]):
         self.team = team
         self.enemy_team = enemy_team
         self.queue = []
@@ -54,7 +54,7 @@ class Fight:
         returns dead characters names"""
         # sorting queue
         self.queue = sorted(self.queue, key=lambda k: k[0].agility, reverse=True)
-        # safe queue_characters to teams and delete dead characters
+        # save queue_characters to teams and delete dead characters
         return self.clearField()
 
     def clearField(self):
@@ -71,6 +71,7 @@ class Fight:
         comparement = [x for x in before + after if x not in before or x not in after]
         return [character.name for character in comparement]
 
+    # old code
     def chooseAction(self, character: Character) -> None:
         while True:
             print(f"{character.getName()}'s turn. Hp:{character.hp}")
