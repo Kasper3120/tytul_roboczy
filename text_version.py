@@ -34,7 +34,7 @@ class TextVersion():
             else:
                 print("Option not available")
 
-    def printTeamStatusEnum(self):
+    def printTeamHPEnum(self):
         status_list = self.controler.getTeamWithHpStr()
         print("Team:")
         for i, status in enumerate(status_list):
@@ -42,7 +42,7 @@ class TextVersion():
 
     def chooseCharacterIndexTest(self) -> int:
         print("Choose character:")
-        self.printTeamStatusEnum()
+        self.printTeamHPEnum()
         team_len = self.controler.getTeamLength()
         print(f"{team_len}. Exit")
         while True:
@@ -53,6 +53,21 @@ class TextVersion():
                 return -1
             else:
                 continue
+
+    def useItemInFight(self, character):
+        item_list = self.controler.getCurrentCharacterInventory()
+        for i, item in enumerate(item_list):
+            print(f"{i}. {item}")
+        print(f"{len(item_list)}. Exit")
+        while True:
+            item_index = parseInt()
+            if item_index == len(item_list):
+                break
+            elif self.controler.useItemCurrentCharacter(item_index):
+                print("Item consumed")
+                break
+            else:
+                print("Wrong input")
 
     def useItem(self):
         character_index = self.chooseCharacterIndexTest()
@@ -77,7 +92,7 @@ class TextVersion():
         while True:
             directions = self.controler.getDirections()
             directions = ', '.join(directions)
-            self.printTeamStatusEnum()
+            self.printTeamHPEnum()
             print("Choose a room:")
             print(directions)
             print("1. Use an item")
@@ -119,22 +134,50 @@ class TextVersion():
                     print("Wrong input")
             self.controler.deleteChest()
 
+    def attackInterface(self) -> None:
+        print("Choose an enemy to attack:")
+        while True:
+            enemy_team = self.controler.getEnemyTeamWithHpStr()
+            for i, enemy in enumerate(enemy_team):
+                print(f"{i}. {enemy.getName()} ({enemy.getHp()})")
+            try:
+                # TODO: finish, use other validation code add exit option
+                chosen_enemy = parseInt()
+                character.attack(chosen_enemy, roll(2), roll(2))
+                break
+            except IndexError:
+                print("Wrong input")
+
     def fightView(self):
-        """
-        init fight
-        while true:
-            for character in sorted
-                whose turn?
-                players:
-                    choose target or use item
-        """
         if not self.controler.initFight():
             return False
         while not self.controler.getFightStatusControler():
-            if self.controler.takeTurnFight():
-                pass # print menu for attacking
+            output = self.controler.takeTurnFight()
+            if output[0]:
+                print(output[1])
             else:
-                pass # print enemies damages, etc
+                if output[1]:
+                    print(output[1])
+                while True:
+                    print(f"{self.controler.getCurrentCharacterName()}'s turn. Hp:{self.controler.getCurrentCharacterHP()}")
+                    print("Choose action:")
+                    print("1. Attack.")
+                    print("2. Special attack.")
+                    print("3. Choose item")
+                    choice = parseInt()
+                    if choice == 1:
+                        # self.attackInterface(character)
+                        # add attackInt
+                        return
+                    elif choice == 2:
+                        # TODO: special
+                        print("Special attack not configured")
+                    elif choice == 3:
+                        # chooseItem in fight ;<
+                        if self.useItem():
+                            return
+                    else:
+                        print("Wrong input")
 
     def newGame(self) -> bool:
         # new game
