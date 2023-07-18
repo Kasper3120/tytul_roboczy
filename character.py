@@ -28,12 +28,12 @@ class Character:
 
         if crit_attack > 0:
             who.hp -= crit_attack
-            print(f"{self.name} attacks criticaly {who.name} for {crit_attack} hp")
+            return f"{self.name} attacks criticaly {who.name} for {crit_attack} hp"
         elif attack > 0:
             who.hp -= attack
-            print(f"{self.name} attacks {who.name} for {attack} hp")
+            return f"{self.name} attacks {who.name} for {attack} hp"
         else:
-            print(f"{self.name}'s attack ({attack}) didn't penetrate {who.name}'s armor")
+            return f"{self.name}'s attack ({attack}) didn't penetrate {who.name}'s armor"
 
     def consumeItemIndex(self, index: int) -> bool:
         try:

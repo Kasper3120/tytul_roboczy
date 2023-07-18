@@ -112,13 +112,43 @@ class Controler():
             room = self.dungeon.current_room
         self.dungeon.chests.pop(room)
 
+    def getCurrentCharacterName(self):
+        return self.current_fight.current_char.getName()
+
+    def getCurrentCharacterHP(self):
+        return self.current_fight.current_char.getHp()
+
+    def getCurrentCharacterInventory(self):
+        return self.current_fight.current_char.getItemNamesList()
+
+    def useItemCurrentCharacter(item_index):
+        return True if self.fight.useItemCurrentCharacter(item_index) else False
+
+    def getEnemyTeamWithHpStr(self) -> list:
+        return [f"{character.getName()} hp: {character.getHp()}"
+                for character in self.fight.enemy_team]
+
     def takeTurnFight(self):
-        if self.dungeon.current_fight.makeAction():
-            return True
-        else:
-            return False
+        """returns string to be printed or False if menu should be displayed"""
+        init_output = self.dungeon.current_fight.initTurn()
+        action_needed = False
+        if init_output[0]:
+            action_needed = True
+            # disp menu and take input
+        output = ""
+        for info in init_output:
+            if info is True or info is False:
+                continue
+            if isinstance(info, str):
+                output += info + "\n"
+            if isinstance(info, List):
+                for name in info:
+                    output += f"{name} died.\n"
+        # return string to be printed
+        return action_needed, output
+
     # TODO: finish
-    def executeStatus(self):
+    def executeStatus(self, character):
         pass
 
 

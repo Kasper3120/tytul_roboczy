@@ -28,6 +28,16 @@ TODO:
         add typehints
         read about passing a list into a func
 
+    fight
+    V | M | C
+    V send init fight => C send init fight => M init fight | init 1st turn (return status) => C send status string => V print status string |
+    V check if character is playable => C check if character is playable => M return if char_playable (y/what happened) => C if playable send menu el send what happened => V print returned str |
+    if menu take input el new turn (loop reset) (if input)=> C send input => M apply input return what happened => C send what happened => V print what happened new turn (loop reset)
+
+        add use item (special loop new func set)
+    
+    
+
     known bugs:
         add passive's to weapons (even empty)
         solved! fights dont dissappear from place
