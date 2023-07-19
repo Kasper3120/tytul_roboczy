@@ -127,41 +127,48 @@ class Fight:
         except IndexError:
             return False
 
+    def attackEnemy(self, chosen_enemy):
+        attack_info = self.current_char.attack(self.enemy_team[chosen_enemy], roll(2), roll(2))
+        dead_info = self.sortQueue
+        return attack_info, dead_info
+
     # status applying isn't finished
     def initTurn(self) -> bool:
         """return patterns:
-            False, status_info - display menu for self.current_char + status_info
-            True, status_info, dead_info_status - char died because of status + status_info
-            True, status_info, dead_info_status, attack_info, dead_info_attack -
+            True, status_info - display menu for self.current_char + status_info
+            False, status_info, dead_info_status - char died because of status + status_info
+            False, status_info, dead_info_status, attack_info, dead_info_attack -
             - dead_info_status died, enemy attacked and killed dead_info_attack"""
         self.sortQueue()
         # look for someone who havent attacked yet
         for i, char_in_queue in enumerate(self.queue):
-            character, attacked, is_controlable = char_in_queue
+            character, is_active, is_controlable = char_in_queue
             # player's action
-            if not attacked and is_controlable:
+            if is_active and is_controlable:
                 if character.status:
                     status_info = character.executeStatus()
                     dead_info_status = self.sortQueue()
-                if character.name in dead_info_status:
-                    # no input needed, who died
-                    return True, status_info, dead_info_status
+                    if character.name in dead_info_status:
+                        # no input needed, who died
+                        return False, status_info, dead_info_status
+                    else:
+                        return True, status_info
                 else:
                     self.current_char = self.queue[i][0]
-                    return False, status_info
+                    return True
             # enemy's action
-            elif not attacked:
+            elif is_active:
                 if character.status:
                     status_info = character.executeStatus()
                     dead_info_status = self.sortQueue()
                 if character.name in dead_info_status:
                     # no input needed, who died
-                    return True, status_info, dead_info_status
+                    return False, status_info, dead_info_status
                 self.queue[i][1] = False
-                # return True - no action needed, who died because of status,
+                # return False - no action needed, who died because of status,
                 # who was attacked, who died because of attack
-                return True, status_info, dead_info_status, self.enemyAction(self.queue[i][0]), self.sortQueue()
-        self.sortQueue()
+                return False, status_info, dead_info_status, self.enemyAction(self.queue[i][0]), self.sortQueue()
+        self.restartQueue()
         return False
 
 

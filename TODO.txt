@@ -39,6 +39,7 @@ TODO:
 
     known bugs:
         add passive's to weapons (even empty)
+        fight ends after one attack of character
         solved! fights dont dissappear from place
         solved! if enemy team empty fight is unexitable
         solved! if team dies player continues exploring

@@ -66,9 +66,11 @@ class Character:
     # TODO: add tests for that
     def executeStatus(self) -> None:
         # pdb.set_trace()
+        output = ""
         for status_name, status_numbers in self.status:
             status_numbers[0] -= 1
             if status_name in ("heal", "bleeding", "poisoning", "hurt"):
+                hp_before = self.hp
                 if status_name == "heal":
                     self.hp += status_numbers[1]
                     if self.hp > self.max_hp:
@@ -78,11 +80,18 @@ class Character:
                 if status_numbers[0] == 0:
                     # del self.status[[status_name, status_numbers]]
                     self.status.remove([status_name, status_numbers])
+                hp_after = self.hp
+                hp_diff = hp_after - hp_before
+                if hp_diff > 0:
+                    output += f"{self.name} gained {hp_diff} due to that effect - {status_name}\n"
+                elif hp_diff < 0:
+                    output += f"{self.name} lost {hp_diff} due to that effect - {status_name}\n"
             if status_name == "strength":
                 # TODO: think about that :)
                 pass
             if status_name == "agility":
                 pass
+        return output
 
     def special(self, weapon, who, special_dice): pass
 

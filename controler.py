@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from os import listdir
-from util import *
-import globals
 from typing import List
+import pdb
+
+import globals
 from dungeon import Dungeon
+from util import *
 
 
 class Controler():
@@ -117,25 +119,31 @@ class Controler():
         self.dungeon.chests.pop(room)
 
     def getCurrentCharacterName(self):
-        return self.current_fight.current_char.getName()
+        return self.dungeon.current_fight.current_char.getName()
 
     def getCurrentCharacterHP(self):
-        return self.current_fight.current_char.getHp()
+        return self.dungeon.current_fight.current_char.getHp()
 
     def getCurrentCharacterInventory(self):
-        return self.current_fight.current_char.getItemNamesList()
+        return self.dungeon.current_fight.current_char.getItemNamesList()
 
-    def useItemCurrentCharacter(item_index):
-        return True if self.fight.useItemCurrentCharacter(item_index) else False
+    def useItemCurrentCharacter(self, item_index):
+        return True if self.dungeon.current_fight.useItemCurrentCharacter(item_index) else False
 
     def getEnemyTeamWithHpStr(self) -> list:
         return [f"{character.getName()} hp: {character.getHp()}"
-                for character in self.fight.enemy_team]
+                for character in self.dungeon.current_fight.enemy_team]
+
+    def attackEnemy(self, chosen_enemy):
+        """returns string, with attack_info and dead_info or false if there is no such target"""
 
     def takeTurnFight(self):
-        """returns string to be printed or False if menu should be displayed"""
+        """returns string to be printed or True if menu should be displayed"""
         init_output = self.dungeon.current_fight.initTurn()
+        print(init_output)
         action_needed = False
+        if isinstance(init_output, bool):
+            return init_output
         if init_output[0]:
             action_needed = True
             # disp menu and take input

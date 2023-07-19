@@ -140,24 +140,28 @@ class TextVersion():
             enemy_team = self.controler.getEnemyTeamWithHpStr()
             for i, enemy in enumerate(enemy_team):
                 print(f"{i}. {enemy.getName()} ({enemy.getHp()})")
-            try:
-                # TODO: finish, use other validation code add exit option
                 chosen_enemy = parseInt()
-                character.attack(chosen_enemy, roll(2), roll(2))
-                break
-            except IndexError:
-                print("Wrong input")
+                output = self.controler.attackEnemy(chosen_enemy)
+                if output:
+                    for info in output:
+                        print(info)
+                    break
+                else:
+                    print("Wrong input")
 
     def fightView(self):
         if not self.controler.initFight():
             return False
         while not self.controler.getFightStatusControler():
             output = self.controler.takeTurnFight()
-            if output[0]:
+            display_menu = False
+            if isinstance(output, bool):
+                display_menu = output
+            elif output[0]:
+                display_menu = True
+            elif output[1]:
                 print(output[1])
-            else:
-                if output[1]:
-                    print(output[1])
+            if display_menu:
                 while True:
                     print(f"{self.controler.getCurrentCharacterName()}'s turn. Hp:{self.controler.getCurrentCharacterHP()}")
                     print("Choose action:")
