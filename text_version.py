@@ -54,7 +54,7 @@ class TextVersion():
             else:
                 continue
 
-    def useItemInFight(self, character):
+    def useItemInFight(self):
         item_list = self.controler.getCurrentCharacterInventory()
         for i, item in enumerate(item_list):
             print(f"{i}. {item}")
@@ -106,8 +106,8 @@ class TextVersion():
                 self.useItem()
             elif choice == "2" and is_chest:
                 self.openChest()
-            elif self.controler.isRoomInDirections(choice):
-                return True if self.controler.setRoom(choice) else False
+            elif self.controler.setRoom(choice):
+                return 
             else:
                 print("There's no such room near your position")
                 print("Option not found")
@@ -138,20 +138,25 @@ class TextVersion():
         print("Choose an enemy to attack:")
         while True:
             enemy_team = self.controler.getEnemyTeamWithHpStr()
-            for i, enemy in enumerate(enemy_team):
-                print(f"{i}. {enemy.getName()} ({enemy.getHp()})")
-                chosen_enemy = parseInt()
-                output = self.controler.attackEnemy(chosen_enemy)
-                if output:
-                    for info in output:
-                        print(info)
-                    break
-                else:
-                    print("Wrong input")
+            for i, enemy_info in enumerate(enemy_team):
+                print(f"{i}. {enemy_info}")
+            chosen_enemy = parseInt()
+            output = self.controler.attackEnemy(chosen_enemy)
+            if output[0]:
+                print(output[0])
+                if output[1]:
+                    for dead in output[1]:
+                        print(f"{dead} died")
+                break
+            else:
+                print("Wrong input")
+                
 
     def fightView(self):
+        # init fight
         if not self.controler.initFight():
             return False
+        # while fight isn't over
         while not self.controler.getFightStatusControler():
             output = self.controler.takeTurnFight()
             display_menu = False
@@ -160,7 +165,8 @@ class TextVersion():
             elif output[0]:
                 display_menu = True
             elif output[1]:
-                print(output[1])
+                for line in output[1]:
+                    print(line)
             if display_menu:
                 while True:
                     print(f"{self.controler.getCurrentCharacterName()}'s turn. Hp:{self.controler.getCurrentCharacterHP()}")
@@ -170,34 +176,35 @@ class TextVersion():
                     print("3. Choose item")
                     choice = parseInt()
                     if choice == 1:
-                        # self.attackInterface(character)
-                        # add attackInt
-                        return
+                        self.attackInterface()
+                        break
                     elif choice == 2:
                         # TODO: special
                         print("Special attack not configured")
                     elif choice == 3:
-                        # chooseItem in fight ;<
-                        if self.useItem():
-                            return
+                        self.useItemInFight()
                     else:
                         print("Wrong input")
 
     def newGame(self) -> bool:
         # new game
-        team_names = self.chooseCharacters(num=1)
+        team_names = self.chooseCharacters(num=2)
         print(team_names)
         length = self.chooseDifficulity()
         self.controler.setTeam(Controler.namesToCharacters(team_names))
         self.controler.setLength(length)
-        if not self.controler.initDungeon(enemies_pool=['foo']):
+        if not self.controler.initDungeon():
             print("Before starting a dungeon, you must have a team")
             return
         while True:
             if self.controler.isFightInRoom():
                 self.fightView()
+            if self.controler.isTeamDead():
+                return False
             if self.roomMenu():
-                return True
+                if self.controler.isGameWon():
+                    return True
+            continue
 
     def chooseCharacters(self, num: int = 2) -> List[str]:
         team_names = []
@@ -225,7 +232,7 @@ class TextVersion():
     # TODO: difficulity sensitive enemies_pool
     def chooseDifficulity(self) -> int:
         while True:
-            choice = input("Choose difficulity: 1-easy, 2-medium, 3-hard, 4-nightmare")
+            choice = input("Choose difficulity: 1-easy, 2-medium, 3-hard, 4-nightmare\n")
             if choice in ('easy', '1'):
                 return 3
             elif choice in ('medium', '2'):

@@ -64,8 +64,7 @@ class Character:
             # TODO: uniq + count
 
     # TODO: add tests for that
-    def executeStatus(self) -> None:
-        # pdb.set_trace()
+    def executeStatus(self) -> str:
         output = ""
         for status_name, status_numbers in self.status:
             status_numbers[0] -= 1
@@ -106,7 +105,7 @@ class Character:
     def pickUpItem(self, item: Item) -> None: self.inventory.backpack.append(item)
 
     def __str__(self) -> str:
-        return f"name:{self.name};hp:{self.hp};inv:{self.inventory}"
+        return f"name:{self.name};hp:{self.hp}"
 
 
 def characterCreator() -> None:

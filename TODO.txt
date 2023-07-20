@@ -39,7 +39,8 @@ TODO:
 
     known bugs:
         add passive's to weapons (even empty)
-        fight ends after one attack of character
+        multiple enemies with same name are getting damage together (look at enemies_pool)
+        solved! fight ends after one attack of character
         solved! fights dont dissappear from place
         solved! if enemy team empty fight is unexitable
         solved! if team dies player continues exploring

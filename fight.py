@@ -20,10 +20,11 @@ class Fight:
         self.current_char = self.team[0]
         self.current_char_index = 0
         self.restartQueue()
-        # return self if enemy_team and team else False
         # if enemy_team and team:
         #     self.fightControlable()
 
+    # old code
+    """
     def attackInterface(self, character: Character) -> None:
         print("Choose an enemy to attack:")
         while True:
@@ -35,6 +36,7 @@ class Fight:
                 break
             except IndexError:
                 print("Wrong input")
+    """
 
     def getTeam(self) -> List[Character]:
         return self.team
@@ -68,10 +70,11 @@ class Fight:
                 for character, active, is_controlable in self.queue
                 if not is_controlable and not character.isDead()]
         after = self.team + self.enemy_team
-        comparement = [x for x in before + after if x not in before or x not in after]
-        return [character.name for character in comparement]
+        comparement = [character.name for character in before + after if character not in after]
+        return comparement
 
     # old code
+    """
     def chooseAction(self, character: Character) -> None:
         while True:
             print(f"{character.getName()}'s turn. Hp:{character.hp}")
@@ -91,12 +94,17 @@ class Fight:
                     return
             else:
                 print("Wrong input")
+    """
 
     def enemyAction(self, enemy):  # TODO: upgrade
         # chosen_target = self.team[randrange(0, len(self.team))]
         chosen_target = random.choice(self.team)
-        return enemy.attack(chosen_target, roll(2), roll(2))
+        attack_info = enemy.attack(chosen_target, roll(2), roll(2))
+        dead_info = self.sortQueue()
+        return attack_info, dead_info
 
+    # old code
+    """
     def fightControlable(self):
         # future problem - when agility is changed it can change the order
         all_chars = self.team + self.enemy_team
@@ -115,11 +123,15 @@ class Fight:
                         self.enemyAction(character)
                 if self.clearField():
                     return
+    """
 
     def executeStatus(self, character):
         if character.status:
-            character.executeStatus()
-            return self.clearField()
+            status_info = character.executeStatus()
+            dead_info = self.sortQueue()
+            return status_info, dead_info
+        else:
+            return "", []
 
     def useItemCurrentCharacter(self, item_index) -> bool:
         try:
@@ -129,7 +141,7 @@ class Fight:
 
     def attackEnemy(self, chosen_enemy):
         attack_info = self.current_char.attack(self.enemy_team[chosen_enemy], roll(2), roll(2))
-        dead_info = self.sortQueue
+        dead_info = self.sortQueue()
         return attack_info, dead_info
 
     # status applying isn't finished
@@ -143,31 +155,29 @@ class Fight:
         # look for someone who havent attacked yet
         for i, char_in_queue in enumerate(self.queue):
             character, is_active, is_controlable = char_in_queue
+            status_info = ""
             # player's action
             if is_active and is_controlable:
-                if character.status:
-                    status_info = character.executeStatus()
-                    dead_info_status = self.sortQueue()
+                status_info, dead_info_status = self.executeStatus(character)
+                if status_info:
                     if character.name in dead_info_status:
                         # no input needed, who died
                         return False, status_info, dead_info_status
-                    else:
-                        return True, status_info
                 else:
                     self.current_char = self.queue[i][0]
-                    return True
+                    self.queue[i][1] = False
+                    return True, status_info
             # enemy's action
             elif is_active:
-                if character.status:
-                    status_info = character.executeStatus()
-                    dead_info_status = self.sortQueue()
+                status_info, dead_info_status = self.executeStatus(character)
                 if character.name in dead_info_status:
                     # no input needed, who died
                     return False, status_info, dead_info_status
                 self.queue[i][1] = False
                 # return False - no action needed, who died because of status,
                 # who was attacked, who died because of attack
-                return False, status_info, dead_info_status, self.enemyAction(self.queue[i][0]), self.sortQueue()
+                attack_info, dead_info_attack = self.enemyAction(self.queue[i][0])
+                return False, status_info, dead_info_status, attack_info, dead_info_attack
         self.restartQueue()
         return False
 

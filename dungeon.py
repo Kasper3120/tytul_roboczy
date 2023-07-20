@@ -7,13 +7,15 @@ from character import Character
 from item import Item
 
 from util import roll, loadCharacter, loadConsumable, parseInt
-from typing import List
+from typing import List, Tuple
 
 import pdb
 
 
 class Dungeon:
-    def __init__(self, team: List[Character], length: int = 5, enemies_pool: List[Character] = [], items_pool: List[Item] = []):
+    def __init__(self, team: List[Character], length: int = 5,
+                enemies_pool = [(loadCharacter("Rat", False), 3), (loadCharacter("Spider", False), 5), (loadCharacter("Skeleton", False), 6)],
+                items_pool: List[Item] = []):
         self.map = {}
         # visited = []
         self.squares = ["a1", "a2"]
@@ -21,27 +23,24 @@ class Dungeon:
         self.chests = {}
         self.team = team
         self.length = length
-        self.generateDungeon(0)
         self.enemies_pool = enemies_pool # TODO: add enemies/items_pool usage
         self.items_pool = items_pool
         self.current_room = "a1"
         self.current_fight = None
+        self.generateDungeon(0)
 
     def randomizeEnemies(self, num: int) -> List[Character]:
         enemies_team = []
         for i in range(0, num):
             roll_enemies = roll()
-            if roll_enemies < 3:
-                enemies_team.append(loadCharacter("Rat", False))
-            elif roll_enemies < 5:
-                enemies_team.append(loadCharacter("Spider", False))
-            else:
-                enemies_team.append(loadCharacter("Skeleton", False))
+            for enemy, roll_val in self.enemies_pool:
+                if roll_enemies < roll_val:
+                    enemies_team.append(enemy)
         return enemies_team
 
     def generateMap(self) -> None:
         self.map["a1"] = ["a2"]
-        for i in range(2, self.length+1):
+        for i in range(2, self.length):
             self.map[f"a{i}"] = [f"a{i+1}", f"a{i-1}"]
             self.squares.append(f"a{i+1}")
         # generate exit
@@ -64,20 +63,24 @@ class Dungeon:
 
     def generateDungeon(self, add: int = 0) -> None:
         self.generateMap()
-        # generate enemies
+        # generate enemies and chests
         for room in self.squares:
+            if room == "a1":
+                continue
             if roll() > 4:
                 # how many enemies
                 roll_enemies = roll(2)
                 num = int(roll_enemies/2)
                 # which enemies
                 self.enemies[room] = self.randomizeEnemies(num+add)
+            if roll() > 5:
+                self.chests[room] = [loadConsumable("health potion")]
         # if no enemies generate harder fight at the end
         if not self.enemies:
-            self.enemies[f"a{self.length-1}"] = self.randomizeEnemies(8)
-        # TODO: generate chests
-        # hp potion in 1st room
-        self.chests['a1'] = [loadConsumable("health potion")]
+            self.enemies[f"a{self.length}"] = self.randomizeEnemies(8)
+        if not self.chests:
+            self.chests['a1'] = [loadConsumable("health potion")]
+        print(self.enemies.keys())
 
     def visualizeDungeon() -> int:
         # TODO: finish visualisation:
@@ -98,6 +101,8 @@ class Dungeon:
         except IndexError:
             return False
 
+    # old code
+    """
     def useItem(self) -> bool:
         print("Choose character:")
         for i, character in enumerate(self.team):
@@ -113,6 +118,7 @@ class Dungeon:
             except IndexError:
                 print("No character under that index")
         return chosen_character.chooseItem()
+    """
 
     def getChestStrList(self, room=None) -> List[str]:
         if not room:
@@ -155,7 +161,6 @@ class Dungeon:
         return self.current_fight.isFinished()
 
     def initFight(self) -> bool:
-        # pdb.set_trace()
         try:
             self.current_fight = Fight(self.team, self.enemies[self.current_room])
             if self.current_fight:
@@ -173,7 +178,6 @@ class Dungeon:
     def startDungeon(self) -> None:
         self.current_room = "a1"
         while True:
-            # pdb.set_trace()
             if self.current_room in self.enemies.keys():
                 # TODO: inspect that bug further
                 self.team = Fight(self.team, self.enemies[self.current_room]).aftermath()

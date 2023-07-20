@@ -39,15 +39,6 @@ class Controler():
         except IndexError:
             return False
 
-    def isRoomInDirections(self, user_input):
-        # is user_input in directions doesn't work properly due to List[str]
-        for room in self.getDirections():
-            if user_input:
-                return True
-            else:
-                continue
-        return False
-
     def namesToCharacters(team: List[str]) -> list:
         character_team = []
         for name in team:
@@ -55,11 +46,11 @@ class Controler():
             character_team.append(character)
         return character_team
 
-    def initDungeon(self, enemies_pool) -> bool:
+    def initDungeon(self) -> bool:
         if not self.init_team or self.length == 1:
             return False
         else:
-            self.dungeon = Dungeon(self.init_team, self.length, enemies_pool)
+            self.dungeon = Dungeon(self.init_team, self.length, [(loadCharacter("Rat", False), 3), (loadCharacter("Spider", False), 5), (loadCharacter("Skeleton", False), 6)] )
             return True
 
     def isChestInRoom(self) -> bool:
@@ -68,7 +59,7 @@ class Controler():
 
     def isFightInRoom(self) -> bool:
         room = self.dungeon.current_room
-        return True if room in self.dungeon.enemies else False
+        return True if room in self.dungeon.enemies.keys() else False
 
     def getDirections(self) -> List[str]:
         room = self.dungeon.current_room
@@ -87,6 +78,11 @@ class Controler():
     def getTeamLength(self) -> int:
         return len(self.dungeon.team)
 
+    def isTeamDead(self) -> bool:
+        """clear dead characters and return if team is dead"""
+        self.dungeon.team = [character for character in self.dungeon.team if not character.isDead()]
+        return not bool(self.dungeon.team)
+
     def initFight(self) -> bool:
         """inits fight and returns true if it was successful"""
         return self.dungeon.initFight()
@@ -95,13 +91,19 @@ class Controler():
         """Returns false if fight is over"""
         return self.dungeon.getFightStatus()
 
-    def setRoom(self, room) -> bool:
+    def setRoom(self, room_in) -> bool:
+        for room in self.getDirections():
+            if room_in == room :
+                self.dungeon.current_room = room
+                return True
+            else:
+                continue
+        return False
         """sets room and checks if dungeon is finished (true)"""
-        if room == 'ex':
-            return True
-        else:
-            self.dungeon.current_room = room
-            return False
+            
+    def isGameWon(self):
+        return True if self.dungeon.current_room == "ex" else False
+            
 
     def useItem(self, character_index, item_index) -> bool:
         """returns true if usage is successful"""
@@ -136,27 +138,29 @@ class Controler():
 
     def attackEnemy(self, chosen_enemy):
         """returns string, with attack_info and dead_info or false if there is no such target"""
+        return self.dungeon.current_fight.attackEnemy(chosen_enemy)
 
     def takeTurnFight(self):
         """returns string to be printed or True if menu should be displayed"""
         init_output = self.dungeon.current_fight.initTurn()
-        print(init_output)
         action_needed = False
         if isinstance(init_output, bool):
             return init_output
         if init_output[0]:
             action_needed = True
             # disp menu and take input
-        output = ""
+        output = []
         for info in init_output:
             if info is True or info is False:
                 continue
             if isinstance(info, str):
-                output += info + "\n"
+                if info:
+                    output.append(info)
             if isinstance(info, List):
                 for name in info:
-                    output += f"{name} died.\n"
+                    output.append(f"{name} died.")
         # return string to be printed
+        # TODO: upgrade output printing (make it a list and join with \n)
         return action_needed, output
 
     # TODO: finish
