@@ -9,6 +9,7 @@ from item import Item
 from util import roll, loadCharacter, loadConsumable, parseInt
 from typing import List, Tuple
 
+from copy import copy, deepcopy
 import pdb
 
 
@@ -35,7 +36,8 @@ class Dungeon:
             roll_enemies = roll()
             for enemy, roll_val in self.enemies_pool:
                 if roll_enemies < roll_val:
-                    enemies_team.append(enemy)
+                    enemies_team.append(copy(enemy))
+                    break
         return enemies_team
 
     def generateMap(self) -> None:
@@ -45,6 +47,7 @@ class Dungeon:
             self.squares.append(f"a{i+1}")
         # generate exit
         self.map[f"a{self.length}"] = ["ex"]
+        self.map["ex"] = ""
         # generate small branches
         for i in range(1, int(self.length/2)):
             rand = randrange(1, self.length)
@@ -77,7 +80,7 @@ class Dungeon:
                 self.chests[room] = [loadConsumable("health potion")]
         # if no enemies generate harder fight at the end
         if not self.enemies:
-            self.enemies[f"a{self.length}"] = self.randomizeEnemies(8)
+            self.enemies[f"a{self.length}"] = self.randomizeEnemies(self.length+3))
         if not self.chests:
             self.chests['a1'] = [loadConsumable("health potion")]
         print(self.enemies.keys())

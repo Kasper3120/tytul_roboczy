@@ -99,7 +99,6 @@ class Controler():
             else:
                 continue
         return False
-        """sets room and checks if dungeon is finished (true)"""
             
     def isGameWon(self):
         return True if self.dungeon.current_room == "ex" else False

@@ -107,7 +107,7 @@ class TextVersion():
             elif choice == "2" and is_chest:
                 self.openChest()
             elif self.controler.setRoom(choice):
-                return 
+                return
             else:
                 print("There's no such room near your position")
                 print("Option not found")
@@ -201,9 +201,9 @@ class TextVersion():
                 self.fightView()
             if self.controler.isTeamDead():
                 return False
-            if self.roomMenu():
-                if self.controler.isGameWon():
-                    return True
+            self.roomMenu()
+            if self.controler.isGameWon():
+                return True
             continue
 
     def chooseCharacters(self, num: int = 2) -> List[str]:
