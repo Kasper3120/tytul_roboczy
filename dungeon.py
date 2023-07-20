@@ -80,7 +80,7 @@ class Dungeon:
                 self.chests[room] = [loadConsumable("health potion")]
         # if no enemies generate harder fight at the end
         if not self.enemies:
-            self.enemies[f"a{self.length}"] = self.randomizeEnemies(self.length+3))
+            self.enemies[f"a{self.length}"] = self.randomizeEnemies(self.length+3)
         if not self.chests:
             self.chests['a1'] = [loadConsumable("health potion")]
         print(self.enemies.keys())
